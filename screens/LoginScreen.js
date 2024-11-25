@@ -9,34 +9,42 @@ import {
 } from "react-native";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+import { API_BASE_URL } from "../services/apiConfig";
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+
   const navigation = useNavigation();
-  const handleLogin = async () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+
+  const login = async () => {
     try {
-      // Make an API request to your backend to authenticate the user
-      const response = await axios.post("http://192.168.1.18:3000/sessions", {
-        email,
-        password,
+      const response = await fetch(`${API_BASE_URL}/sessions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
       });
 
-      const userRole = response.data.type;
-      // Navigate based on the user role
-      if (userRole === "Doctor") {
-        navigation.navigate("Doctor");
-      } else if (userRole === "patient") {
-        navigation.navigate("Patient");
+      if (response.ok) {
+        const data = await response.json();
+        const token = data.access_token;
+        console.log('Token:', token);
+        await AsyncStorage.setItem('authToken', token);
+        navigation.navigate('DrawerNavigation');
       } else {
-        // If the role is neither doctor nor patient, show an error or handle it
-        alert("Invalid role");
+        console.error('Login failed');
       }
     } catch (error) {
-      console.error("Login error:", error);
-      alert("Failed to login. Please try again.");
+      console.error('Error during login:', error);
     }
   };
+
   return (
     <ImageBackground
       source={require("../assets/images/image.png")}
@@ -60,7 +68,7 @@ export default function LoginScreen() {
           placeholderTextColor="#7ABFCF"
         />
         <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText} onPress={handleLogin}>
+          <Text style={styles.buttonText} onPress={login}>
             Login
           </Text>
         </TouchableOpacity>
