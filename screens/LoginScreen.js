@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Modal, Alert, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Modal, Alert, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -22,29 +22,33 @@ function Login() {
         body: JSON.stringify({
           user:{
             email,
-          password,
+            password,
           }
         }),
       });
+      const data = await response.json();
+      console.log(data)
 
-      if (response.ok) {
-        const data = await response.json();
-        const token = data.token;
-        const userRole = data.type;
-        if (userRole === "Doctor") {
-          navigation.navigate("Doctor");
-          await AsyncStorage.setItem('authToken', token);
-        } else if (userRole === "Patient") {
-          navigation.navigate("Patient");
-          await AsyncStorage.setItem('authToken', token);
-        } else {
-          alert("Invalid role");
+      if (data.status==401) {
+        Alert.alert('Login Failed', 'Wrong Email or password.');
+      }else if(data.user.email_confirmed == false){
+        Alert.alert('Login Failed', 'Your Account is not confirmed Check your email.');
+      }else{
+        if(data.logged_in){
+          const token = data.token;
+          const userRole = data.type;
+          if (userRole === "Doctor") {
+            navigation.navigate("Doctor");
+            await AsyncStorage.setItem('authToken', token);
+          } else{
+            navigation.navigate("Patient");
+            await AsyncStorage.setItem('authToken', token);
+          } 
         }
-      } else {
-        console.error('Login failed');
       }
     } catch (error) {
       console.error('Error during login:', error);
+      Alert.alert('Login Failed', 'Please check your connection and try again.');
     }
   };
 
@@ -88,55 +92,60 @@ function Login() {
 
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.container}>
-      <View  style={styles.formContainer}>
-        <Text style={styles.title}>Login</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          placeholderTextColor="#666"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-        />
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <ImageBackground source={require('../assets/images/image.png')}style={styles.backgroundImage}>
+        <View style={styles.formContainer}>
+          <Text style={styles.title}>Login</Text>
           <TextInput
-            style={[styles.input, { flex: 1 }]}
-            placeholder="Password"
+            style={styles.input}
+            placeholder="Email"
             placeholderTextColor="#666"
-            secureTextEntry={!showPassword}
-            value={password}
-            onChangeText={(text) => setPassword(text)}
+            value={email}
+            onChangeText={(text) => setEmail(text)}
           />
-          <TouchableOpacity onPress={togglePasswordVisibility}>
-            <MaterialCommunityIcons name={showPassword ? 'eye' : 'eye-off'} size={22} color="#333" />
-          </TouchableOpacity>
-        </View>
-        <TouchableOpacity onPress={login} style={styles.button}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={toggleModal}>
-          <Text style={styles.link}>Forgot Password?</Text>
-        </TouchableOpacity>
-      </View>
-      <Modal visible={showModal} animationType="slide" transparent>
-        <KeyboardAvoidingView style={styles.container}>
-          <View style={styles.formContainer}>
-            <Text style={styles.title}>Reset Password</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <TextInput
-              style={styles.input}
-              placeholder="Your Email"
+              style={[styles.input, { flex: 1 }]}
+              placeholder="Password"
               placeholderTextColor="#666"
-              value={email}
-              onChangeText={(text) => setEmail(text)}
+              secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={(text) => setPassword(text)}
             />
-            <TouchableOpacity onPress={requestNewPassword} style={styles.button}>
-              <Text style={styles.buttonText}>Send</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={toggleModal}>
-              <Text style={styles.link}>Back</Text>
+            <TouchableOpacity onPress={togglePasswordVisibility}>
+              <MaterialCommunityIcons name={showPassword ? 'eye' : 'eye-off'} size={22} color="#333" />
             </TouchableOpacity>
           </View>
-        </KeyboardAvoidingView>
-      </Modal>
+          <TouchableOpacity onPress={login} style={styles.button}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={goToRegister}>
+          <Text  style={styles.buttonText}>New Here?</Text>
+          </TouchableOpacity>
+          <TouchableOpacity >
+            <Text style={styles.link}>Forgot Password?</Text>
+          </TouchableOpacity>
+        </View>
+        <Modal visible={showModal} animationType="slide" transparent>
+          <KeyboardAvoidingView style={styles.container}>
+            <View style={styles.formContainer}>
+              <Text style={styles.title}>Reset Password</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Your Email"
+                placeholderTextColor="#666"
+                value={email}
+                onChangeText={(text) => setEmail(text)}
+              />
+              <TouchableOpacity onPress={requestNewPassword} style={styles.button}>
+                <Text style={styles.buttonText}>Send</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={toggleModal}>
+                <Text style={styles.link}>Back</Text>
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
+        </Modal>
+      </ImageBackground>
     </KeyboardAvoidingView>
   );
 }
@@ -144,7 +153,13 @@ function Login() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    resizeMode: 'cover',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
