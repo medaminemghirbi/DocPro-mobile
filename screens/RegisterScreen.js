@@ -1,288 +1,122 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ImageBackground,
-  Modal,
-  Alert,
-  KeyboardAvoidingView,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { API_BASE_URL } from "../services/apiConfig";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { Text } from "react-native-paper";
 
-function Register() {
-  const navigation = useNavigation();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedRole, setSelectedRole] = useState("Patient");
+import Background from "../components/Background";
+import Logo from "../components/Logo";
+import Header from "../components/Header";
+import Button from "../components/Button";
+import TextInput from "../components/TextInput";
+import BackButton from "../components/BackButton";
+import { theme } from "../core/theme";
+import { emailValidator } from "../helpers/emailValidator";
+import { passwordValidator } from "../helpers/passwordValidator";
+import { nameValidator } from "../helpers/nameValidator";
+import { SelectList } from "react-native-dropdown-select-list";
+import StyledSelectList from "../components/SelectList";
 
-  const login = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/sessions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user: {
-            email,
-            password,
-          },
-        }),
-      });
-      const data = await response.json();
+export default function RegisterScreen({ navigation }) {
+  const [firstname, setFirstName] = useState({ value: "", error: "" });
+  const [lastname, setLastName] = useState({ value: "", error: "" });
 
-      if (data.status === 401) {
-        Alert.alert("Login Failed", "Wrong Email or password.");
-      } else if (data.user.email_confirmed === false) {
-        Alert.alert(
-          "Login Failed",
-          "Your Account is not confirmed. Check your email."
-        );
-      } else {
-        if (data.logged_in) {
-          const token = data.token;
-          const userRole = data.type;
-          if (userRole === "Doctor") {
-            navigation.navigate("Doctor");
-            await AsyncStorage.setItem("authToken", token);
-          } else {
-            navigation.navigate("Patient");
-            await AsyncStorage.setItem("authToken", token);
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error during login:", error);
-      Alert.alert(
-        "Login Failed",
-        "Please check your connection and try again."
-      );
+  
+  const [email, setEmail] = useState({ value: "", error: "" });
+  const [password, setPassword] = useState({ value: "", error: "" });
+
+  const onSignUpPressed = () => {
+    const firstnameError = nameValidator(firstname.value);
+    const lastnameError = nameValidator(lastname.value);
+
+    const emailError = emailValidator(email.value);
+    const passwordError = passwordValidator(password.value);
+    if (emailError || passwordError || firstnameError || lastnameError) {
+      setFirstName({ ...firstname, error: firstnameError });
+      setLastName({ ...lastname, error: lastnameError });
+
+      setEmail({ ...email, error: emailError });
+      setPassword({ ...password, error: passwordError });
+      return;
     }
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "HomeScreen" }],
+    });
   };
-
-  const goToLogin = () => {
-    navigation.navigate("Login");
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const toggleModal = () => {
-    setShowModal(!showModal);
-  };
-
-  const requestNewPassword = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/user/newpassword`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        Alert.alert("Success", data.message);
-        toggleModal();
-      } else {
-        const errorData = await response.json();
-        Alert.alert("Error", errorData.message);
-      }
-    } catch (error) {
-      console.error("Error requesting new password:", error);
-      Alert.alert(
-        "Error",
-        "An error occurred while requesting a new password. Please try again later."
-      );
-    }
-  };
+  // ROLE MANAGEMENT  for Sign Up
+  const [selected, setSelected] = React.useState("");
+  
+  const data = [
+      {key:'Doctor', value:'Doctor'},
+      {key:'Patient', value:'Patient'},
+  ]
 
   return (
-    <KeyboardAvoidingView behavior="padding" style={styles.container}>
-      <ImageBackground
-        source={require("../assets/images/image.png")}
-        style={styles.backgroundImage}
-      >
-        <View style={styles.formContainer}>
-          <Text style={styles.title}>Create New Account</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="First Name"
-            placeholderTextColor="#666"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Last Name"
-            placeholderTextColor="#666"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor="#666"
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-          />
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+    <Background>
+      <BackButton goBack={navigation.goBack} />
+      <Logo />
+      <Header>Welcome To DocPro</Header>
+      <TextInput
+        label="First Name"
+        returnKeyType="next"
+        value={firstname.value}
+        onChangeText={(text) => setFirstName({ value: text, error: "" })}
+        error={!!firstname.error}
+        errorText={firstname.error}
+      />
             <TextInput
-              style={[styles.input, { flex: 1 }]}
-              placeholder="Password"
-              placeholderTextColor="#666"
-              secureTextEntry={!showPassword}
-              value={password}
-              onChangeText={(text) => setPassword(text)}
-            />
-            <TouchableOpacity onPress={togglePasswordVisibility}>
-              <MaterialCommunityIcons
-                name={showPassword ? "eye" : "eye-off"}
-                size={22}
-                color="#333"
-              />
-            </TouchableOpacity>
-          </View>
+        label="Last Name"
+        returnKeyType="next"
+        value={lastname.value}
+        onChangeText={(text) => setLastName({ value: text, error: "" })}
+        error={!!lastname.error}
+        errorText={lastname.error}
+      />
+      
+      <TextInput
+        label="Email"
+        returnKeyType="next"
+        value={email.value}
+        onChangeText={(text) => setEmail({ value: text, error: "" })}
+        error={!!email.error}
+        errorText={email.error}
+        autoCapitalize="none"
+        autoCompleteType="email"
+        textContentType="emailAddress"
+        keyboardType="email-address"
+      />
+      <TextInput
+        label="Password"
+        returnKeyType="done"
+        value={password.value}
+        onChangeText={(text) => setPassword({ value: text, error: "" })}
+        error={!!password.error}
+        errorText={password.error}
+        secureTextEntry
+      />
+       <StyledSelectList 
+        setSelected={(val) => setSelected(val)} 
+        data={data} 
+        save="value"
+    />
+      <Button
+        mode="contained"
+        onPress={onSignUpPressed}
+        style={{ marginTop: 24 }}
+      >
+        Create Account Now
+      </Button>
 
-          {/* Radio Buttons for Role Selection */}
-          <Text style={styles.subtitle}>Select Role</Text>
-          <View style={styles.radioButtonGroupVertical}>
-            <TouchableOpacity
-              style={styles.radioButtonContainer}
-              onPress={() => setSelectedRole("Doctor")}
-            >
-              <MaterialCommunityIcons
-                name={
-                  selectedRole === "Doctor"
-                    ? "radiobox-marked"
-                    : "radiobox-blank"
-                }
-                size={24}
-                color="#007BFF"
-              />
-              <Text style={styles.radioButtonText}>Doctor</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.radioButtonContainer}
-              onPress={() => setSelectedRole("Patient")}
-            >
-              <MaterialCommunityIcons
-                name={
-                  selectedRole === "Patient"
-                    ? "radiobox-marked"
-                    : "radiobox-blank"
-                }
-                size={24}
-                color="#007BFF"
-              />
-              <Text style={styles.radioButtonText}>Patient</Text>
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity onPress={login} style={styles.button}>
-            <Text style={styles.buttonText}>Create Account Now</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={goToLogin} style={styles.iconButton}>
-            <MaterialCommunityIcons name="arrow-left" size={24} color="#fff" />
-            <Text style={styles.iconButtonText}>Go to Login</Text>
-          </TouchableOpacity>
-        </View>
-      </ImageBackground>
-    </KeyboardAvoidingView>
+    </Background>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  backgroundImage: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  formContainer: {
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
-    width: "90%",
-    borderRadius: 20,
-    padding: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#0F9BAE",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  subtitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#333",
-    marginVertical: 10,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#BCE4EA",
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
-    backgroundColor: "#F3FAFB",
-    color: "#0F9BAE",
-  },
-  button: {
-    backgroundColor: "#0F9BAE",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  buttonText: {
-    color: "#FFF",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  iconButton: {
+  row: {
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#007BFF",
-    borderRadius: 5,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    marginVertical: 10,
+    marginTop: 4,
   },
-  iconButtonText: {
-    color: "#fff",
-    fontSize: 16,
+  link: {
     fontWeight: "bold",
-    marginLeft: 8,
-  },
-  radioButtonGroupVertical: {
-    flexDirection: "column",
-    alignItems: "flex-start",
-  },
-  radioButtonContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  radioButtonText: {
-    fontSize: 16,
-    marginLeft: 10,
-    color: "#333",
+    color: theme.colors.primary,
   },
 });
-
-export default Register;
