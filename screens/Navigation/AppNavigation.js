@@ -6,6 +6,7 @@ import LoginScreen from "../LoginScreen.js";
 import DashboardDoctorScreen from "../Doctor/DashboardDoctorScreen";
 import DashboardPatientScreen from "../Patient/DashboardPatientScreen";
 import Register from "../RegisterScreen";
+import ConfirmationScreen from "../ConfirmationScreen";
 //import DrawerNavigation from './DrawerNavigation';
 
 const Stack = createNativeStackNavigator();
@@ -19,6 +20,8 @@ const AppNavigation = () => {
         <Stack.Screen name="Doctor" component={DashboardDoctorScreen} />
         <Stack.Screen name="Patient" component={DashboardPatientScreen} />
         <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="Confirmation" component={ConfirmationScreen} />
+
 
         </Stack.Navigator>
     </NavigationContainer>

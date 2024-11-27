@@ -37,12 +37,13 @@ function Login() {
         if(data.logged_in){
           const token = data.token;
           const userRole = data.type;
+          await AsyncStorage.setItem('currentUser', JSON.stringify(data.user));
+          await AsyncStorage.setItem('authToken', token);
+
           if (userRole === "Doctor") {
             navigation.navigate("Doctor");
-            await AsyncStorage.setItem('authToken', token);
           } else{
             navigation.navigate("Patient");
-            await AsyncStorage.setItem('authToken', token);
           } 
         }
       }
