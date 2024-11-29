@@ -116,7 +116,6 @@ function RegisterScreen({ navigation }) {
           }),
         });
         const data = await response.json();
-        console.log(data)
         if (data.status==500) {
           const errorMessage = data.errors ? data.errors.join(', ') : 'Something went wrong. Please try again.';
           Alert.alert('Registration Failed', errorMessage);
@@ -126,7 +125,6 @@ function RegisterScreen({ navigation }) {
             const userRole = data.type;
             await AsyncStorage.setItem('userRole', userRole);
             navigation.navigate('Confirmation');
-            console.log(userRole)
           }
         }
       } catch (error) {
@@ -217,7 +215,7 @@ function RegisterScreen({ navigation }) {
         mode="contained"
         onPress={onSignUpPressed}
         style={styles.button}
-        disabled={loading} // Disable the button while loading
+        disabled={loading}
       >
         {loading ? (
           <ActivityIndicator size="small" color="#ffffff" /> // Show loader when loading
@@ -268,6 +266,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   button: {
+    backgroundColor: '#0F9BAE',
     marginTop: 20,
   },
   errorText: {

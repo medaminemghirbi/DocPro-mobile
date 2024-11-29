@@ -7,6 +7,8 @@ import SettingsScreen from "./SettingsScreen";
 import HomeScreen from "./HomeScreen";
 import BlogScreen from "./BlogScreen";
 import ChatScreen from "./ChatScreen";
+import MapsScreen from "./MapsScreen";
+import DictionaireScreen from "./DictionaireScreen";
 
 // Create Bottom Tab Navigator
 const Tab = createBottomTabNavigator();
@@ -21,7 +23,7 @@ const DashboardPatientScreen = ({ navigation }) => {
           // Assigning icons to each tab
           if (route.name === "Home") {
             iconName = focused ? "home" : "home-outline";
-          } else if (route.name === "Appointment") {
+          } else if (route.name === "Booking") {
             iconName = focused ? "calendar" : "calendar-outline";
           } else if (route.name === "Settings") {
             iconName = focused ? "settings" : "settings-outline";
@@ -29,31 +31,45 @@ const DashboardPatientScreen = ({ navigation }) => {
             iconName = focused ? "chatbubble" : "chatbubble-outline"; // Icon for Chat/Forum
           } else if (route.name === "Blogs") {
             iconName = focused ? "book" : "book-outline"; // Icon for Blogs
+          } else if (route.name === "Maps"){
+            iconName = focused ? "map" : "map-outline"; // Icon for Blogs
+          }else if (route.name === "Manual"){
+            iconName = focused ? "reader" : "reader-outline"; // Icon for Blogs
           }
 
           // Setting icon color to white
           return <Icon name={iconName} size={size} color="white" />;
         },
-        tabBarActiveTintColor: "white", // Icon color when the tab is active
-        tabBarInactiveTintColor: "gray",  // Icon color when the tab is inactive
+        tabBarActiveTintColor: "#ffffff", // Icon and label color when active
+        tabBarInactiveTintColor: "#B3E5F6", // Icon and label color when inactive
         tabBarStyle: {
-          height: 80, // Increased height of the bottom tab menu
-          paddingBottom: 10, // Adding some padding to the bottom
-          borderTopWidth: 0,  // Optional: Remove the top border
-          backgroundColor: "#0F9BAE", // Set the background color of the tab bar to #0F9BAE
+          height: 90, // Increase the height of the bottom bar
+          paddingBottom: 10, // Space for better alignment
+          paddingTop: 10, // Space at the top of the tab bar
+          backgroundColor: "#0F9BAE", // Exact color from the image (#0F9BAE)
+          borderTopLeftRadius: 20, // Rounded top corners
+          borderTopRightRadius: 20, // Rounded top corners
+          shadowColor: "#000", // Shadow for a modern touch
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 10,
+          elevation: 5,
         },
         tabBarLabelStyle: {
-          fontSize: 14, // Adjust the font size of labels
-          marginBottom: 5, // Adds space below the label for better readability
-          color: "black", // Set the label text color to black
+          fontSize: 12, // Slightly smaller font size for labels
+          fontWeight: "bold", // Bold labels
+          marginTop: -5, // Adjust label position closer to icons
         },
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}  />
-      <Tab.Screen name="Appointment" component={AppointmentsScreen}  options={{ headerShown: false }} />
+      <Tab.Screen name="Booking" component={AppointmentsScreen}  options={{ headerShown: false }} />
       <Tab.Screen name="Forum" component={ChatScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Maps" component={MapsScreen} options={{ headerShown: false }}  />
       <Tab.Screen name="Blogs" component={BlogScreen} options={{ headerShown: false }}  />
+      <Tab.Screen name="Manual" component={DictionaireScreen} options={{ headerShown: false }}  />
       <Tab.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }}  />
+
     </Tab.Navigator>
   );
 };

@@ -7,7 +7,7 @@ import DashboardDoctorScreen from "../Doctor/DashboardDoctorScreen";
 import DashboardPatientScreen from "../Patient/DashboardPatientScreen";
 import Register from "../RegisterScreen";
 import ConfirmationScreen from "../ConfirmationScreen";
-//import DrawerNavigation from './DrawerNavigation';
+import MapsScreen from "../Patient/MapsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +21,7 @@ const AppNavigation = () => {
         <Stack.Screen name="Patient" component={DashboardPatientScreen} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Confirmation" component={ConfirmationScreen} />
+        <Stack.Screen name="Maps" component={MapsScreen} />
 
 
         </Stack.Navigator>

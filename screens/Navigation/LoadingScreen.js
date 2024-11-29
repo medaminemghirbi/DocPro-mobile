@@ -17,7 +17,6 @@ const LoadingScreen = ({ navigation }) => {
         // If user exists, parse the user data and check the role
         const parsedUser = JSON.parse(user);
         const userRole = parsedUser.type;
-        console.log()
         // Navigate based on the user role
         if (userRole === 'Doctor') {
           navigation.replace('DoctorDashboard');
