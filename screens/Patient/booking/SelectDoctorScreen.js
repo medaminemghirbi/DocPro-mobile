@@ -1,36 +1,37 @@
-// AppointmentsScreen.js
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet ,TextInput, Image, TouchableOpacity, ScrollView } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_BASE_URL } from "../../services/apiConfig";
+import { View, Text, Button, StyleSheet, TextInput, Image, TouchableOpacity, ScrollView } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { API_BASE_URL } from "../../../services/apiConfig";
+import CustomLoader from "../../../components/CustomLoader";
+import { FontAwesome } from "@expo/vector-icons";
 
-const AppointmentsScreen = () => {
+const SelectDoctorScreen = ({ navigation }) => {
   const [user, setUser] = useState(null);
   const [consultations, setConsultations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isSearchVisible, setIsSearchVisible] = useState(false); // For toggling the search bar
-  const [searchQuery, setSearchQuery] = useState(''); // For tracking search input
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [filteredDoctors, setFilteredDoctors] = useState([]);
 
   const goToDoctorMap = (doctor) => {
-    navigation.navigate('Maps', { doctor }); // Pass the doctor object as a parameter
+    navigation.navigate('Maps', { doctor }); 
   };
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const currentUser = await AsyncStorage.getItem('currentUser');
+        const currentUser = await AsyncStorage.getItem("currentUser");
         const userData = JSON.parse(currentUser);
-        setUser(userData); // Store user data in state
-        const userId = await AsyncStorage.getItem('id');
-        const token = await AsyncStorage.getItem('authToken');
+        setUser(userData);
+        const token = await AsyncStorage.getItem("authToken");
         if (token) {
           const response = await fetch(
-            `${API_BASE_URL}/api/mobile/patient_consultations_today/${userId}`,
+            `${API_BASE_URL}/api/mobile/doctor_list/${userData.location}`,
             {
-              method: 'GET',
+              method: "GET",
               headers: {
-                'Authorization': `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
               },
             }
           );
@@ -39,7 +40,7 @@ const AppointmentsScreen = () => {
           if (response.ok) {
             setConsultations(result);
           } else {
-            console.error('Error fetching consultations:', result.message);
+            console.error("Error fetching consultations:", result.message);
           }
         }
       } catch (error) {
@@ -51,11 +52,12 @@ const AppointmentsScreen = () => {
 
     fetchUserData();
   }, []);
+
   useEffect(() => {
     if (searchQuery) {
-      const filtered = consultations.filter((consultation) =>
-        consultation.doctor.firstname.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        consultation.doctor.lastname.toLowerCase().includes(searchQuery.toLowerCase())
+      const filtered = consultations.filter((doctor) =>
+        doctor.firstname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        doctor.lastname.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredDoctors(filtered);
     } else {
@@ -66,48 +68,30 @@ const AppointmentsScreen = () => {
   if (loading) {
     return (
       <View style={styles.container}>
-        <Text>Loading...</Text>
+        <CustomLoader />
       </View>
     );
   }
 
-  const todayDate = new Date().toLocaleDateString('en-GB', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
+  const todayDate = new Date().toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
   });
 
   return (
     <View style={styles.container}>
-            <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
-          {/* Greeting and Question */}
+      <View style={styles.bannerContainer}>
+        <View style={styles.banner}>
           <View style={styles.textContainer}>
-            <Text style={styles.headerGreeting}>Hi, {user.firstname} {user.lastname}!</Text>
-            <Text style={styles.headerQuestion}>How are you today?</Text>
-          </View>
-          {/* Profile Image */}
-          {user && user.user_image_url ? (
-            <Image
-              source={{ uri: user.user_image_url }}
-              style={styles.profileImage}
-            />
-          ) : (
-            <View style={styles.profileImagePlaceholder}>
-              <Text style={styles.profileImageText}>No Image</Text>
-            </View>
-          )}
-        </View>
-      </SafeAreaView>
-    <View style={styles.bannerContainer}>
-      <View style={styles.banner}>
-        {/* Banner Text */}
-        <View style={styles.textContainer}>
-          <Text style={styles.bannerText}>
-            Reserver Avec le meilleur dermatologue
-          </Text>
-          <TouchableOpacity style={styles.bannerButton} onPress={() => setIsSearchVisible(!isSearchVisible)}>
+            <Text style={styles.bannerText}>
+              Reserver Avec le meilleur dermatologue à {user.location}
+            </Text>
+            <TouchableOpacity
+              style={styles.bannerButton}
+              onPress={() => setIsSearchVisible(!isSearchVisible)}
+            >
               <Text style={styles.bannerButtonText}>Trouver Un Docteur</Text>
             </TouchableOpacity>
             {isSearchVisible && (
@@ -118,40 +102,96 @@ const AppointmentsScreen = () => {
                 onChangeText={setSearchQuery}
               />
             )}
-        </View>
-
-        {/* Banner Image */}
-        <Image
-          source={require('../../assets/images/doctor-1.png')} // Replace with your image path
-          style={styles.bannerImage}
-          resizeMode="contain"
-        />
-      </View>
-    </View>
-    <ScrollView>
-          <View style={styles.recommendationCard}>
-            <Image
-              source={{ uri: "https://via.placeholder.com/80" }}
-              style={styles.doctorImage}
-            />
-            <View style={styles.doctorInfo}>
-              <Text style={styles.doctorName}>
-                Dr. consultation.doctor.firstname consultation.doctor.lastname
-              </Text>
-              <Text style={styles.doctorSpecialty}> at </Text>
-              <Text style={styles.doctorSpecialty}> consultation.appointment_type </Text>
-              <Text style={styles.doctorRating}>consultation.doctor.address</Text>
-
-            </View>
           </View>
-    </ScrollView>
+          <Image
+            source={require("../../../assets/images/doctor-1.png")}
+            style={styles.bannerImage}
+            resizeMode="contain"
+          />
+        </View>
+      </View>
+      <ScrollView>
+        {filteredDoctors.length > 0 ? (
+          filteredDoctors.map((doctor) => (
+            <TouchableOpacity
+              key={doctor.id}
+              style={styles.recommendationCard}
+              onPress={() => goToDoctorMap(doctor)}
+            >
+              <Image
+                source={{ uri: doctor?.user_image_url_mobile ||
+                  "https://via.placeholder.com/80", }}
+                style={styles.doctorImage}
+              />
+              <View style={styles.doctorInfo}>
+                <Text style={styles.doctorName}>
+                  Dr. {doctor.firstname} {doctor.lastname}{" "}
+                  {!(doctor.is_archived) ? <FontAwesome name="check-circle" size={16} color="#4CAF50" />: ""}
+                  
+                </Text>
+                <Text style={styles.doctorSpecialty}>
+                  Med Doctor Dermalogoue, TN 
+                </Text>
+                online-prediction
+                <Text style={styles.doctorSpecialty}>
+                <FontAwesome name="map-marker" size={16} color="#1a1a1a" />{" "} Address: {doctor.address || "N/A"}
+                </Text>
+                <TouchableOpacity onPress={() => goToDoctorMap(doctor)}>
+                  <Text style={styles.map}>View on Map</Text>
+                </TouchableOpacity>
+                <Text style={styles.online}>
+                  {doctor.working_on_line ? "Available Online" : "Not Available Online"}
+                </Text>
 
+                <TouchableOpacity
+                  style={styles.selectButton}
+                  onPress={() => navigation.navigate("SelectDate", { doctorId: doctor.id })}
+                >
+                  <Text style={styles.buttonText}>Select Doctor</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+          ))
+        ) : (
+          <Text style={styles.noConsultationsText}>
+            No doctors found matching your search.
+          </Text>
+        )}
+      </ScrollView>
 
-  </View>
+    </View>
   );
 };
 
+
 const styles = StyleSheet.create({
+
+  map: {
+    fontSize: 14,
+    color: "#a6a6a6",
+    fontWeight: "bold",
+    marginTop: 7,
+    textAlign: "left",
+  },
+  online: {
+    fontSize: 14,
+    color: "#4da6ff",
+    fontWeight: "bold",
+    marginTop: 5,
+    textAlign: "left",
+  },
+  selectButton: {
+    backgroundColor: "#F0F0F0",
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: "#00C9A7",
+    marginTop: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  
   container: {
     flex: 1,
     backgroundColor: "#E8F5FE", // Light blue background for the whole page
@@ -290,6 +330,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
+    marginTop:10,
     elevation: 5,
   },
   doctorImage: {
@@ -307,6 +348,7 @@ const styles = StyleSheet.create({
     color: "#004b8d", // Dark blue for doctor name
   },
   doctorSpecialty: {
+    marginTop:5,
     color: "#555",
   },
   doctorRating: {
@@ -335,19 +377,19 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     paddingVertical: 20,  // Adds spacing to make it look more centered
   },
-psText: {
-  marginHorizontal: 20,
-  fontSize: 18,
-  marginBottom: 20,
-  color: 'black', // Set the text color to black
-  fontStyle: 'italic', // Optional: Make it italic like a "PS" note
-  fontSize: 14, // Optional: Adjust the font size for emphasis
-},
-link: {
-  color: 'blue', // Blue color to make the URL stand out as a link
-  textDecorationLine: 'underline', // Add underline to make it look like a hyperlink
-},
-  
+  psText: {
+    marginHorizontal: 20,
+    fontSize: 18,
+    marginBottom: 20,
+    color: 'black', // Set the text color to black
+    fontStyle: 'italic', // Optional: Make it italic like a "PS" note
+    fontSize: 14, // Optional: Adjust the font size for emphasis
+  },
+  link: {
+    color: 'blue', // Blue color to make the URL stand out as a link
+    textDecorationLine: 'underline', // Add underline to make it look like a hyperlink
+  },
+
 });
 
-export default AppointmentsScreen;
+export default SelectDoctorScreen;

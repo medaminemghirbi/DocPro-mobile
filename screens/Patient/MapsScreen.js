@@ -6,7 +6,7 @@ import * as Location from 'expo-location';
 const MapsScreen = ({ route }) => {
     const doctor = route?.params?.doctor;
     const [googleMapStyle, setGoogleMapStyle] = useState([]);
-
+    console.log(route.params)
     const [mapRegion, setMapRegion] = useState({
         latitude: doctor?.latitude,
         longitude: doctor?.longitude,
