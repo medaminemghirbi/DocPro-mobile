@@ -11,7 +11,14 @@ function Login() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showModal, setShowModal] = useState(false);
-
+  const updateImageUrl = (userData) => {
+    const updatedUser = { ...userData };
+      if (updatedUser.user_image_url) {
+      updatedUser.user_image_url = updatedUser.user_image_url.replace("localhost:3000", "192.168.1.18:3000");
+    }
+  
+    return updatedUser;
+  };
   const login = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/sessions`, {
@@ -27,8 +34,6 @@ function Login() {
         }),
       });
       const data = await response.json();
-      console.log(data)
-
       if (data.status==401) {
         Alert.alert('Login Failed', 'Wrong Email or password.');
       }else if(data.user.email_confirmed == false){
@@ -37,7 +42,9 @@ function Login() {
         if(data.logged_in){
           const token = data.token;
           const userRole = data.type;
-          await AsyncStorage.setItem('currentUser', JSON.stringify(data.user));
+          const updatedUser = updateImageUrl(data.user);
+          await AsyncStorage.setItem('currentUser', JSON.stringify(updatedUser));
+          await AsyncStorage.setItem('id', data.user.id);
           await AsyncStorage.setItem('authToken', token);
 
           if (userRole === "Doctor") {
@@ -48,7 +55,6 @@ function Login() {
         }
       }
     } catch (error) {
-      console.error('Error during login:', error);
       Alert.alert('Login Failed', 'Please check your connection and try again.');
     }
   };
