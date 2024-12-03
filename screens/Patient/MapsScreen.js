@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Alert, Text } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import * as Location from 'expo-location';
 
 const MapsScreen = ({ route }) => {
     const doctor = route?.params?.doctor;
-    const [googleMapStyle, setGoogleMapStyle] = useState([]);
-    console.log(route.params)
-    const [mapRegion, setMapRegion] = useState({
-        latitude: doctor?.latitude,
-        longitude: doctor?.longitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-
-    })
+    const [mapRegion, setMapRegion] = useState(null);
+    useEffect(() => {
+        if (doctor) {
+            setMapRegion({
+                latitude: parseFloat(doctor.latitude) || 0, // Handle potential null/invalid values
+                longitude: parseFloat(doctor.longitude) || 0,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+            });
+        }
+    }, [doctor]);
     if (!doctor) {
         return (
             <View style={styles.fallbackContainer}>
@@ -23,22 +24,33 @@ const MapsScreen = ({ route }) => {
             </View>
         );
     }
-
+    if (!mapRegion) {
+        return (
+            <View style={styles.centered}>
+                <Text style={styles.loadingText}>Loading map...</Text>
+            </View>
+        );
+    }
     return (
         <View style={styles.container}>
             <MapView style={styles.map} region={mapRegion}>
-                <Marker coordinate={mapRegion} title={doctor?.firstname + ' ' + doctor?.lastname} ></Marker>
+                <Marker
+                    coordinate={{
+                        latitude: mapRegion.latitude,
+                        longitude: mapRegion.longitude,
+                    }}
+                    title={`${doctor.firstname} ${doctor.lastname}`}
+                    description={doctor.address || 'No address provided'}
+                />
             </MapView>
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#fff",
-        alignItems: 'center',
-        justifyContent: 'center'
+        backgroundColor: '#fff',
     },
     map: {
         width: '100%',
@@ -60,10 +72,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    errorText: {
+    loadingText: {
         fontSize: 18,
-        color: 'red',
-        textAlign: 'center',
+        color: 'blue',
     },
 });
 

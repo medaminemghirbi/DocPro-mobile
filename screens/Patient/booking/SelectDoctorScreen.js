@@ -15,7 +15,7 @@ const SelectDoctorScreen = ({ navigation }) => {
   const [filteredDoctors, setFilteredDoctors] = useState([]);
 
   const goToDoctorMap = (doctor) => {
-    navigation.navigate('Maps', { doctor }); 
+    navigation.navigate('Maps', { doctor });
   };
 
   useEffect(() => {
@@ -119,29 +119,51 @@ const SelectDoctorScreen = ({ navigation }) => {
               onPress={() => goToDoctorMap(doctor)}
             >
               <Image
-                source={{ uri: doctor?.user_image_url_mobile ||
-                  "https://via.placeholder.com/80", }}
+                source={{
+                  uri: doctor?.user_image_url_mobile ||
+                    "https://via.placeholder.com/80",
+                }}
                 style={styles.doctorImage}
               />
               <View style={styles.doctorInfo}>
                 <Text style={styles.doctorName}>
                   Dr. {doctor.firstname} {doctor.lastname}{" "}
-                  {!(doctor.is_archived) ? <FontAwesome name="check-circle" size={16} color="#4CAF50" />: ""}
-                  
+                  {!(doctor.is_archived) ? <FontAwesome name="check-circle" size={16} color="#4CAF50" /> : null}
+
                 </Text>
                 <Text style={styles.doctorSpecialty}>
-                  Med Doctor Dermalogoue, TN 
+                  Med Doctor Dermalogoue, TN
                 </Text>
-                online-prediction
-                <Text style={styles.doctorSpecialty}>
-                <FontAwesome name="map-marker" size={16} color="#1a1a1a" />{" "} Address: {doctor.address || "N/A"}
-                </Text>
-                <TouchableOpacity onPress={() => goToDoctorMap(doctor)}>
-                  <Text style={styles.map}>View on Map</Text>
-                </TouchableOpacity>
+                <Text style={styles.address}>
+                <FontAwesome name="map-marker" size={16} color="#1a1a1a" />{" "}
+                {doctor.address
+                  ? (() => {
+                      const words = doctor.address.split(" ");
+                      const firstLine = words.slice(0, 2).join(" "); // First two words
+                      const secondLine = words.slice(2).join(" ");  // Remaining words
+                      return `${firstLine}\n${secondLine}`;
+                    })()
+                  : "N/A"}
+              </Text>
+
+
+              <TouchableOpacity onPress={() => goToDoctorMap(doctor)}>
+                <Text style={styles.map}>View on Map</Text>
+              </TouchableOpacity>
+
                 <Text style={styles.online}>
-                  {doctor.working_on_line ? "Available Online" : "Not Available Online"}
+                  {doctor.working_on_line ? (
+                    <Text style={[{ color: "green" }]}>
+                      <FontAwesome name="wifi" size={16} color="#4CAF50" />
+                      Available Online</Text>
+                  ) : (
+                    <Text style={[{ color: "red" }]}>
+                      <FontAwesome name="close" size={16} color="red" />
+                      Not Available Online
+                    </Text>
+                  )}
                 </Text>
+
 
                 <TouchableOpacity
                   style={styles.selectButton}
@@ -158,14 +180,21 @@ const SelectDoctorScreen = ({ navigation }) => {
           </Text>
         )}
       </ScrollView>
-
     </View>
   );
 };
 
 
 const styles = StyleSheet.create({
-
+  psText: {
+    marginHorizontal: 20,
+    fontSize: 18,
+    marginBottom: 10,
+    marginTop: 50,
+    color: 'black', // Set the text color to black
+    fontStyle: 'italic', // Optional: Make it italic like a "PS" note
+    fontSize: 18, // Optional: Adjust the font size for emphasis
+  },
   map: {
     fontSize: 14,
     color: "#a6a6a6",
@@ -191,7 +220,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  
+
   container: {
     flex: 1,
     backgroundColor: "#E8F5FE", // Light blue background for the whole page
@@ -330,7 +359,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    marginTop:10,
+    marginTop: 10,
     elevation: 5,
   },
   doctorImage: {
@@ -348,8 +377,14 @@ const styles = StyleSheet.create({
     color: "#004b8d", // Dark blue for doctor name
   },
   doctorSpecialty: {
-    marginTop:5,
+    marginTop: 5,
     color: "#555",
+  },
+  address: {
+    fontSize: 14,
+    color: "#333",
+    flexWrap: "wrap", // Allows wrapping text
+    lineHeight: 20,  // Adjusts spacing between lines
   },
   doctorRating: {
     color: "#f39c12", // Gold for rating stars
