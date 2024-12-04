@@ -1,9 +1,9 @@
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from 'react';
 import { API_BASE_URL } from "../../../services/apiConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const SelectTimeSlotScreen = ({ route }) => {
+const SelectTimeSlotScreen = ({ route, navigation }) => {
     const { doctorId, selectedDate } = route.params;  // Access passed params
     const [availableSlots, setAvailableSlots] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -12,9 +12,6 @@ const SelectTimeSlotScreen = ({ route }) => {
         const fetchAvailableSlots = async () => {
             try {
                 const token = await AsyncStorage.getItem('authToken');
-                console.log(selectedDate)
-                console.log(doctorId)
-
                 if (token) {
                     const response = await fetch(
                         `${API_BASE_URL}/api/v1/available_time_slots/${selectedDate}/${doctorId}`,
@@ -28,7 +25,7 @@ const SelectTimeSlotScreen = ({ route }) => {
 
                     const result = await response.json();
                     if (response.ok) {
-                        console.log(result.available_slots)
+                        console.log(result.available_slots);
                         setAvailableSlots(result.available_slots); // Set available slots
                     } else {
                         console.error('Error fetching available slots:', result.message);
@@ -46,9 +43,16 @@ const SelectTimeSlotScreen = ({ route }) => {
 
     // Render time slot item
     const renderTimeSlot = ({ item }) => (
-        <View style={styles.timeSlotContainer}>
+        <TouchableOpacity
+            style={styles.timeSlotContainer}
+            onPress={() => navigation.navigate('Confirmation', {
+                doctorId,
+                selectedDate,
+                selectedTime: item.time,  // Pass the selected time
+            })}
+        >
             <Text style={styles.timeSlot}>{item.time}</Text>
-        </View>
+        </TouchableOpacity>
     );
 
     return loading ? (

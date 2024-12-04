@@ -7,8 +7,38 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const SelectDateScreen = ({ navigation, route }) => {
     const [weekDays, setWeekDays] = useState([]);
     const [loading, setLoading] = useState(true);
-    const { doctorId } = route.params;
+    const [doctorInfo, setDoctorInfo] = useState(null);
 
+    const doctorId = route.params?.doctorId;
+    useEffect(() => {
+        fetchDoctorData();
+    }, []);
+
+    const fetchDoctorData = async () => {
+        try {
+            const token = await AsyncStorage.getItem("authToken");
+            if (token) {
+                const response = await fetch(
+                    `${API_BASE_URL}/api/mobile/get_selected_doctor/${doctorId}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                const result = await response.json();
+                if (response.ok) {
+                    setDoctorInfo(result);
+                } else {
+                    console.error("Error fetching doctor info:", result.message);
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching doctor data:", error);
+        }
+    };
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -44,27 +74,35 @@ const SelectDateScreen = ({ navigation, route }) => {
         fetchUserData();
     }, [doctorId]);
 
-    // Helper function to format date as dd-mm-yyyy
+    // Helper function to format date as yyyy-mm-dd
     const formatDateString = (dateString) => {
-        const date = new Date(dateString);  // Convert to Date object
-        const day = String(date.getDate()).padStart(2, '0');  // Get day with leading zero if necessary
-        const month = String(date.getMonth() + 1).padStart(2, '0');  // Get month (0-indexed)
-        const year = date.getFullYear();  // Get year
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
         
         return `${year}-${month}-${day}`;
     };
-    // Navigate to the SelectTimeSlotScreen with doctorId and formatted date
-    const handleDayPress = (day) => {
-        const formattedDate = formatDateString(day.dateString);
-        console.log(doctorId)
-        navigation.navigate('SelectTimeSlotScreen', {
-            doctorId: doctorId,
-            selectedDate: formattedDate
-        });
 
+    // Navigate to the SelectTimeSlotScreen or show alert if Sunday
+    const handleDayPress = (day) => {
+        const selectedDate = new Date(day.dateString);
+        const isSunday = selectedDate.getDay() === 0; // Check if Sunday
+
+        if (isSunday) {
+            Alert.alert("Holiday", "You can't select day off.");
+        }else if(doctorInfo.working_saturday == false){
+            Alert.alert("Saturday", "Doctor is closed on saturday");
+        }else {
+            const formattedDate = formatDateString(day.dateString);
+            navigation.navigate('SelectTimeSlotScreen', {
+                doctorId: doctorId,
+                selectedDate: formattedDate
+            });
+        }
     };
 
-    // Calendar marked days and event handler
+    // Calendar marked days
     const markedDates = weekDays.reduce((acc, day) => {
         acc[day.date] = { marked: true, dotColor: 'blue' };
         return acc;

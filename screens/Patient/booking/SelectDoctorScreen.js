@@ -164,6 +164,18 @@ const SelectDoctorScreen = ({ navigation }) => {
                   )}
                 </Text>
 
+                <Text style={styles.online}>
+                  {doctor.working_saturday ? (
+                    <Text style={[{ color: "green" }]}>
+                      <FontAwesome name="calendar" size={16} color="#4CAF50" />
+                      Working on saturday</Text>
+                  ) : (
+                    <Text style={[{ color: "red" }]}>
+                      <FontAwesome name="close" size={16} color="red" />
+                      Closed on saturday
+                    </Text>
+                  )}
+                </Text>
 
                 <TouchableOpacity
                   style={styles.selectButton}
