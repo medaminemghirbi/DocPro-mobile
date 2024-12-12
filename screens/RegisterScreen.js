@@ -95,6 +95,7 @@ function RegisterScreen({ navigation }) {
       setPassword({ ...password, error: passwordError });
       setSelectedRole(...selectedRole,roleError);
       setSelectedGouvernement(...selectedGouvernement,gouvernementError);
+      setLoading(false);
       return;
     }
 

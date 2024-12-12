@@ -73,9 +73,9 @@ const HomeScreen = ({ navigation }) => {
             <Text style={styles.headerQuestion}>How are you today?</Text>
           </View>
           {/* Profile Image */}
-          {user && user.user_image_url ? (
+          {user && user.user_image_url_mobile ? (
             <Image
-              source={{ uri: user.user_image_url }}
+              source={{ uri: user.user_image_url_mobile }}
               style={styles.profileImage}
             />
           ) : (

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar } from 'react-native-calendars';
 import { API_BASE_URL } from "../../../services/apiConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CustomLoader from "../../../components/CustomLoader";
 
 const SelectDateScreen = ({ navigation, route }) => {
     const [weekDays, setWeekDays] = useState([]);
@@ -88,10 +89,10 @@ const SelectDateScreen = ({ navigation, route }) => {
     const handleDayPress = (day) => {
         const selectedDate = new Date(day.dateString);
         const isSunday = selectedDate.getDay() === 0; // Check if Sunday
-
+        const isSaturday =  selectedDate.getDay() === 6;
         if (isSunday) {
-            Alert.alert("Holiday", "You can't select day off.");
-        }else if(doctorInfo.working_saturday == false){
+            Alert.alert("Holiday", "You can't select Sunday.");
+        }else if(doctorInfo.working_saturday == false && isSaturday){
             Alert.alert("Saturday", "Doctor is closed on saturday");
         }else {
             const formattedDate = formatDateString(day.dateString);
@@ -109,7 +110,9 @@ const SelectDateScreen = ({ navigation, route }) => {
     }, {});
 
     return loading ? (
-        <Text>Loading...</Text>
+        <View style={styles.container}>
+        <CustomLoader />
+      </View>
     ) : (
         <View style={styles.container}>
             <Calendar

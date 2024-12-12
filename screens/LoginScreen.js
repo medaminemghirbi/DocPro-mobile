@@ -11,17 +11,9 @@ function Login() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const updateImageUrl = (userData) => {
-    const updatedUser = { ...userData };
-      if (updatedUser.user_image_url) {
-      updatedUser.user_image_url = updatedUser.user_image_url.replace("localhost:3000", "192.168.1.18:3000");
-    }
-  
-    return updatedUser;
-  };
   const login = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/sessions`, {
+      const response = await fetch(`${API_BASE_URL}/api/mobile/sessions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,8 +34,7 @@ function Login() {
         if(data.logged_in){
           const token = data.token;
           const userRole = data.type;
-          const updatedUser = updateImageUrl(data.user);
-          await AsyncStorage.setItem('currentUser', JSON.stringify(updatedUser));
+          await AsyncStorage.setItem('currentUser', JSON.stringify(data.user));
           await AsyncStorage.setItem('id', data.user.id);
           await AsyncStorage.setItem('authToken', token);
 

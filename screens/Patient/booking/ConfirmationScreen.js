@@ -8,22 +8,101 @@ import {
     TextInput,
     TouchableOpacity,
     Image,
+    Alert,
 } from "react-native";
 import { API_BASE_URL } from "../../../services/apiConfig";
 
 const ConfirmationScreen = ({ navigation, route }) => {
     const [isOnline, setIsOnline] = useState(false);
+    const [user, setUser] = useState(null);
+
     const [addNote, setAddNote] = useState(false);
     const [note, setNote] = useState("");
     const [doctorInfo, setDoctorInfo] = useState(null);
     const [isOnlineshow, setIsOnlineshow] = useState(false);
+    const [loading, setLoading] = useState(false);
+
     const doctorId = route.params?.doctorId;
     const selectedDate = route.params?.selectedDate;
     const selectedTime = route.params?.selectedTime;
+    const combinedDateTime = `${selectedDate}T${selectedTime}:00.000`;
+    console.log(doctorId)
+    console.log(combinedDateTime)
 
+    const fetchUserData = async () => {
+        try {
+            const currentUser = await AsyncStorage.getItem('currentUser');
+            const userData = JSON.parse(currentUser);
+            setUser(userData);
+            fetchDoctorData();
+
+        } catch (error) {
+            console.error("Error setting or fetching user", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    
+    const ConfirmNow = async () => {
+        setLoading(true); // Start loading
+        try {
+            const token = await AsyncStorage.getItem("authToken");
+            if (!token) {
+                throw new Error("Authentication token is missing.");
+            }
+    
+            const response = await fetch(`${API_BASE_URL}/api/mobile/create_demande`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    patient_id: user.id,
+                    doctor_id: doctorId,
+                    appointment: combinedDateTime,
+                }),
+            });
+    
+            const data = await response.json();
+            console.log(data); // Log API response
+    
+            if (data.status === 422) {
+                const errorMessage = data.errors
+                    ? data.errors.join(", ")
+                    : "Something went wrong. Please try again later.";
+                Alert.alert("Appointment Failed", errorMessage);
+            } else if (data.status === 200) {
+                Alert.alert(
+                    "Appointment Created Successfully",
+                    "Your appointment has been successfully created.",
+                    [
+                        {
+                            text: "OK",
+                            onPress: () => navigation.navigate("AppointmentList"),
+                        },
+                    ]
+                );
+            }else {
+                Alert.alert("Unexpected Error", "Something went wrong. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error during Appointment Confirmation:", error);
+            Alert.alert(
+                "Appointment Failed",
+                "Please check your connection and try again."
+            );
+        }
+    };
+    
     useEffect(() => {
-        fetchDoctorData();
-    }, []);
+        fetchUserData();
+    }, [doctorId, selectedDate, selectedTime]); 
+
+
+
+
 
     const fetchDoctorData = async () => {
         try {
@@ -66,12 +145,12 @@ const ConfirmationScreen = ({ navigation, route }) => {
             <Text style={styles.title}>Appointment Confirmation</Text>
 
             <View style={styles.card}>
-                { <Image
+                {<Image
                     source={{
                         uri: doctorInfo.user_image_url_mobile || "https://via.placeholder.com/80",
                     }}
                     style={styles.image}
-                /> }
+                />}
                 <View style={styles.info}>
                     <Text style={styles.name}>
                         Dr. {doctorInfo.firstname} {doctorInfo.lastname}
@@ -117,14 +196,20 @@ const ConfirmationScreen = ({ navigation, route }) => {
 
             <View style={styles.buttonContainer}>
                 <TouchableOpacity
-                    style={styles.confirmButton}
-                    onPress={() => {
-                        // Handle confirm action
-                        navigation.navigate("Home");
-                    }}
+                    style={[
+                        styles.confirmButton,
+                        loading && { backgroundColor: "#A5D6A7" }, // Dim the button while loading
+                    ]}
+                    onPress={!loading ? ConfirmNow : null} // Disable multiple clicks while loading
+                    disabled={loading} // Disable the button while loading
                 >
-                    <Text style={styles.buttonText}>Confirm Appointment</Text>
+                    {loading ? (
+                        <Text style={styles.buttonText}>Loading...</Text>
+                    ) : (
+                        <Text style={styles.buttonText}>Confirm Appointment</Text>
+                    )}
                 </TouchableOpacity>
+
 
                 <TouchableOpacity
                     style={styles.cancelButton}

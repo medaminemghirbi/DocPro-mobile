@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native
 import React, { useEffect, useState } from 'react';
 import { API_BASE_URL } from "../../../services/apiConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CustomLoader from "../../../components/CustomLoader";
 
 const SelectTimeSlotScreen = ({ route, navigation }) => {
     const { doctorId, selectedDate } = route.params;  // Access passed params
@@ -56,8 +57,10 @@ const SelectTimeSlotScreen = ({ route, navigation }) => {
     );
 
     return loading ? (
-        <Text>Loading...</Text>
-    ) : (
+        <View style={styles.container}>
+        <CustomLoader />
+      </View>
+    ) :  (
         <View style={styles.container}>
             <Text style={styles.selectedDateText}>Selected Date: {selectedDate}</Text>
             <View style={styles.timeSlotsContainer}>

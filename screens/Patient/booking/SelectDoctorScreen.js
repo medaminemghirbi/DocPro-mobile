@@ -362,81 +362,55 @@ const styles = StyleSheet.create({
   },
   recommendationCard: {
     flexDirection: "row",
-    backgroundColor: "#ffffff", // White card background
+    backgroundColor: "#ffffff", // White background for better readability
+    borderRadius: 10, // Rounded corners for modern design
+    marginVertical: 10, // Space between cards
     marginHorizontal: 20,
-    borderRadius: 15,
-    padding: 15,
-    marginBottom: 15,
+    padding: 15, // Space inside the card
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    marginTop: 10,
-    elevation: 5,
+    elevation: 3,
   },
   doctorImage: {
-    width: 80,
+    width: 80, // Fixed size for uniformity
     height: 80,
-    borderRadius: 10,
-    marginRight: 10,
+    borderRadius: 40, // Circular image
+    marginRight: 15,
   },
   doctorInfo: {
-    justifyContent: "center",
+    flex: 1, // Allow flexible width
   },
   doctorName: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#004b8d", // Dark blue for doctor name
+    color: "#333", // Neutral color for contrast
+    marginBottom: 5,
   },
   doctorSpecialty: {
-    marginTop: 5,
-    color: "#555",
+    fontSize: 14,
+    color: "#666", // Lighter gray for secondary text
+    marginBottom: 10,
   },
   address: {
-    fontSize: 14,
-    color: "#333",
-    flexWrap: "wrap", // Allows wrapping text
-    lineHeight: 20,  // Adjusts spacing between lines
-  },
-  doctorRating: {
-    color: "#f39c12", // Gold for rating stars
-  },
-  bottomBar: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: "#ffffff", // White bottom bar background
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#ccc",
-  },
-  navItem: {
-    alignItems: "center",
-  },
-  profileImageText: {
-    color: 'white',
-    fontWeight: 'bold',
+    fontSize: 13,
+    color: "#888", // Subtle color for less critical information
+    marginBottom: 5,
+    lineHeight: 18, // Improved readability for multiline text
   },
   noConsultationsText: {
+    textAlign: "center",
     fontSize: 16,
-    color: '#999',
-    textAlign: 'center',
-    fontStyle: 'italic',
-    paddingVertical: 20,  // Adds spacing to make it look more centered
+    color: "#999", // Neutral color
+    marginTop: 20,
   },
-  psText: {
-    marginHorizontal: 20,
-    fontSize: 18,
-    marginBottom: 20,
-    color: 'black', // Set the text color to black
-    fontStyle: 'italic', // Optional: Make it italic like a "PS" note
-    fontSize: 14, // Optional: Adjust the font size for emphasis
+  buttonText: {
+    color: "#00C9A7", // Match theme
+    fontWeight: "bold",
   },
-  link: {
-    color: 'blue', // Blue color to make the URL stand out as a link
-    textDecorationLine: 'underline', // Add underline to make it look like a hyperlink
-  },
-
 });
+
+
 
 export default SelectDoctorScreen;
