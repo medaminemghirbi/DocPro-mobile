@@ -21,7 +21,7 @@ const AppNavigation = () => {
         <Stack.Screen name="Patient" component={DashboardPatientScreen} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Confirmation" component={ConfirmationScreen} />
-        <Stack.Screen name="Maps" component={MapsScreen} />
+        <Stack.Screen name="Maps" component={MapsScreen} options={{ headerShown: false }} />
 
 
         </Stack.Navigator>
