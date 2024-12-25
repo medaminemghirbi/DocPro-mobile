@@ -62,6 +62,8 @@ const ConfirmationScreen = ({ navigation, route }) => {
                     patient_id: user.id,
                     doctor_id: doctorId,
                     appointment: combinedDateTime,
+                    appointment_type: isOnline? '1' : '0',
+                    note : note || ""
                 }),
             });
     
@@ -160,7 +162,7 @@ const ConfirmationScreen = ({ navigation, route }) => {
                 </View>
             </View>
 
-            {(doctorInfo.working_online) ?
+            {(doctorInfo.working_on_line) ?
                 <View style={styles.toggleContainer}>
                     <Text style={styles.toggleLabel}>Online Appointment?</Text>
                     <Switch

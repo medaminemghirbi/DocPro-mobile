@@ -5,7 +5,7 @@ import { View, Text, StyleSheet } from "react-native";
 const BlogScreen = () => {
   return (
     <View style={styles.screenContainer}>
-      <Text style={styles.greetingText}>Blog Screen</Text>
+      <Text style={styles.greetingText}>Health Screen Coming soon</Text>
     </View>
   );
 };

@@ -51,6 +51,10 @@ function RegisterScreen({ navigation }) {
     { key: 'Doctor', value: 'Doctor' },
     { key: 'Patient', value: 'Patient' },
   ];
+  const gender = [
+    { key: 'male', value: 'male' },
+    { key: 'female', value: 'female' },
+  ];
   const location = [
     { key: 'ben-arous', value: 'ben-arous' },
     { key: 'bizerte', value: 'bizerte' },
@@ -112,7 +116,7 @@ function RegisterScreen({ navigation }) {
               email: email.value,
               password: password.value,
               type: selectedRole,
-              gouvernement: selectedGouvernement,
+              location: selectedGouvernement,
             }
           }),
         });
@@ -192,6 +196,14 @@ function RegisterScreen({ navigation }) {
             </TouchableOpacity>
           </View>
           {password.error ? <Text style={styles.errorText}>{password.error}</Text> : null}
+          {/* Select Gender */}
+          <StyledSelectList
+            setSelected={(val) => setSelectedRole(val)}
+            data={gender}
+            save="value"
+            placeholder="Select Gender"
+          />
+          {selectedRole.error ? <Text style={styles.errorText}>{selectedRole.error}</Text> : null}
 
           {/* Select Role */}
           <StyledSelectList
