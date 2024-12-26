@@ -3,13 +3,14 @@ import { View, Text, StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/Ionicons"; // Importing icons
 //import AppointmentsScreen from "./AppointmentsScreen";
-import SettingsScreen from "./SettingsScreen";
+import SettingsScreen from "./settings/SettingsScreen";
 import HomeScreen from "./HomeScreen";
 import BlogScreen from "./BlogScreen";
 import ChatScreen from "./ChatScreen";
 import MapsScreen from "./MapsScreen";
 import DictionaireScreen from "./DictionaireScreen";
 import BookingStackNavigator from "./booking/BookingStackNavigator";
+import SettingStackNavigator from "./settings/SettingStackNavigator";
 
 // Create Bottom Tab Navigator
 const Tab = createBottomTabNavigator();
@@ -69,7 +70,7 @@ const DashboardPatientScreen = ({ navigation }) => {
       {/* <Tab.Screen name="Maps" component={MapsScreen} options={{ headerShown: false }}  /> */}
       {/* <Tab.Screen name="Blogs" component={BlogScreen} options={{ headerShown: false }}  /> */}
       <Tab.Screen name="Messages" component={ChatScreen} options={{ headerShown: false }} />
-      <Tab.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Settings" component={SettingStackNavigator} options={{ headerShown: false }} />
 
     </Tab.Navigator>
   );

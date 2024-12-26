@@ -1,11 +1,11 @@
-// SettingsScreen.js
+// MyProfilInformation.js
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-const SettingsScreen = () => {
+const MyProfilInformationScreen = ({ navigation }) => {
   return (
     <View style={styles.screenContainer}>
-      <Text style={styles.greetingText}>Settings</Text>
+      <Text style={styles.greetingText}>My Profil Information Screen Coming soon</Text>
     </View>
   );
 };
@@ -24,4 +24,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SettingsScreen;
+export default MyProfilInformationScreen;
