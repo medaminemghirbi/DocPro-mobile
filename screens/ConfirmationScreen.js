@@ -65,13 +65,14 @@ const ConfirmationScreen = ({ navigation }) => {
       );
 
       if (response.status === 200) {
-        Alert.alert("Success", "Confirmation successful!");
-        const storedUserRole = await AsyncStorage.getItem("userRole");
-        if (storedUserRole === "Doctor") {
-          navigation.navigate("Doctor");
-        } else {
-          navigation.navigate("Patient");
-        }
+        Alert.alert("Success", "Acoount Confirmed successful!");
+        navigation.navigate("Login");
+        // const storedUserRole = await AsyncStorage.getItem("userRole");
+        // if (storedUserRole === "Doctor") {
+        //   navigation.navigate("Doctor");
+        // } else {
+        //   navigation.navigate("Patient");
+        // }
       } else {
         Alert.alert("Error", "Invalid confirmation code. Please try again.");
       }

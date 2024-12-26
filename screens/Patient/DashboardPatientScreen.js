@@ -3,13 +3,14 @@ import { View, Text, StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/Ionicons"; // Importing icons
 //import AppointmentsScreen from "./AppointmentsScreen";
-import SettingsScreen from "./SettingsScreen";
+import SettingsScreen from "./settings/SettingsScreen";
 import HomeScreen from "./HomeScreen";
 import BlogScreen from "./BlogScreen";
 import ChatScreen from "./ChatScreen";
 import MapsScreen from "./MapsScreen";
 import DictionaireScreen from "./DictionaireScreen";
 import BookingStackNavigator from "./booking/BookingStackNavigator";
+import SettingStackNavigator from "./settings/SettingStackNavigator";
 
 // Create Bottom Tab Navigator
 const Tab = createBottomTabNavigator();
@@ -28,13 +29,13 @@ const DashboardPatientScreen = ({ navigation }) => {
             iconName = focused ? "calendar" : "calendar-outline";
           } else if (route.name === "Settings") {
             iconName = focused ? "settings" : "settings-outline";
-          } else if (route.name === "Forum") {
-            iconName = focused ? "chatbubble" : "chatbubble-outline"; // Icon for Chat/Forum
-          } else if (route.name === "Blogs") {
-            iconName = focused ? "book" : "book-outline"; // Icon for Blogs
-          } else if (route.name === "Maps"){
+          } else if (route.name === "Health") {
+            iconName = focused ? "heart" : "heart-outline"; // Icon for Chat/Forum
+          } else if (route.name === "Messages") {
+            iconName = focused ? "mail" : "mail-outline"; // Icon for Blogs
+          } else if (route.name === "Maps") {
             iconName = focused ? "map" : "map-outline"; // Icon for Blogs
-          }else if (route.name === "Manual"){
+          } else if (route.name === "Wikepedia") {
             iconName = focused ? "reader" : "reader-outline"; // Icon for Blogs
           }
 
@@ -63,13 +64,13 @@ const DashboardPatientScreen = ({ navigation }) => {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}  />
-      <Tab.Screen name="Booking" component={BookingStackNavigator}  options={{ headerShown: false }} />
-      <Tab.Screen name="Forum" component={ChatScreen} options={{ headerShown: false }} />
-      <Tab.Screen name="Maps" component={MapsScreen} options={{ headerShown: false }}  />
-      <Tab.Screen name="Blogs" component={BlogScreen} options={{ headerShown: false }}  />
-      <Tab.Screen name="Manual" component={DictionaireScreen} options={{ headerShown: false }}  />
-      <Tab.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }}  />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Booking" component={BookingStackNavigator} options={{ headerShown: false }} />
+      <Tab.Screen name="Health" component={BlogScreen} options={{ headerShown: false }} />
+      {/* <Tab.Screen name="Maps" component={MapsScreen} options={{ headerShown: false }}  /> */}
+      {/* <Tab.Screen name="Blogs" component={BlogScreen} options={{ headerShown: false }}  /> */}
+      <Tab.Screen name="Messages" component={ChatScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Settings" component={SettingStackNavigator} options={{ headerShown: false }} />
 
     </Tab.Navigator>
   );

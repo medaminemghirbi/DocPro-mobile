@@ -15,7 +15,7 @@ const SelectDoctorScreen = ({ navigation }) => {
   const [filteredDoctors, setFilteredDoctors] = useState([]);
 
   const goToDoctorMap = (doctor) => {
-    navigation.navigate('Maps', { doctor }); 
+    navigation.navigate('Maps', { doctor });
   };
 
   useEffect(() => {
@@ -119,28 +119,62 @@ const SelectDoctorScreen = ({ navigation }) => {
               onPress={() => goToDoctorMap(doctor)}
             >
               <Image
-                source={{ uri: doctor?.user_image_url_mobile ||
-                  "https://via.placeholder.com/80", }}
+                source={{
+                  uri: doctor?.user_image_url_mobile ||
+                    "https://via.placeholder.com/80",
+                }}
                 style={styles.doctorImage}
               />
               <View style={styles.doctorInfo}>
                 <Text style={styles.doctorName}>
                   Dr. {doctor.firstname} {doctor.lastname}{" "}
-                  {!(doctor.is_archived) ? <FontAwesome name="check-circle" size={16} color="#4CAF50" />: ""}
-                  
+                  {!(doctor.is_archived) ? <FontAwesome name="check-circle" size={16} color="#4CAF50" /> : null}
+
                 </Text>
                 <Text style={styles.doctorSpecialty}>
-                  Med Doctor Dermalogoue, TN 
+                  Med Doctor Dermalogoue, TN
                 </Text>
-                online-prediction
-                <Text style={styles.doctorSpecialty}>
-                <FontAwesome name="map-marker" size={16} color="#1a1a1a" />{" "} Address: {doctor.address || "N/A"}
-                </Text>
-                <TouchableOpacity onPress={() => goToDoctorMap(doctor)}>
-                  <Text style={styles.map}>View on Map</Text>
-                </TouchableOpacity>
+                <Text style={styles.address}>
+                <FontAwesome name="map-marker" size={16} color="#1a1a1a" />{" "}
+                {doctor.address
+                  ? (() => {
+                      const words = doctor.address.split(" ");
+                      const firstLine = words.slice(0, 2).join(" "); // First two words
+                      const secondLine = words.slice(2).join(" ");  // Remaining words
+                      return `${firstLine}\n${secondLine}`;
+                    })()
+                  : "N/A"}
+              </Text>
+
+
+              <TouchableOpacity onPress={() => goToDoctorMap(doctor)}>
+                <Text style={styles.map}>View on Map</Text>
+              </TouchableOpacity>
+
                 <Text style={styles.online}>
-                  {doctor.working_on_line ? "Available Online" : "Not Available Online"}
+                  {doctor.working_on_line ? (
+                    <Text style={[{ color: "green" }]}>
+                      <FontAwesome name="wifi" size={16} color="#4CAF50" />
+                      Available Online</Text>
+                  ) : (
+                    <Text style={[{ color: "red" }]}>
+                      <FontAwesome name="close" size={16} color="red" />
+                      Not Available Online
+                    </Text>
+                  )}
+                </Text>
+
+                <Text style={styles.online}>
+                  {doctor.working_saturday ? (
+                    <Text style={[{ color: "green" }]}>
+                      <FontAwesome name="calendar" size={16} color="#4CAF50" />
+                      Working on saturday</Text>
+                  ) : (
+                    <Text style={[{ color: "red" }]}>
+                      <FontAwesome name="close" size={16} color="red" />
+                      Closed on saturday
+                    </Text>
+                  )}
                 </Text>
 
                 <TouchableOpacity
@@ -158,14 +192,21 @@ const SelectDoctorScreen = ({ navigation }) => {
           </Text>
         )}
       </ScrollView>
-
     </View>
   );
 };
 
 
 const styles = StyleSheet.create({
-
+  psText: {
+    marginHorizontal: 20,
+    fontSize: 18,
+    marginBottom: 10,
+    marginTop: 50,
+    color: 'black', // Set the text color to black
+    fontStyle: 'italic', // Optional: Make it italic like a "PS" note
+    fontSize: 18, // Optional: Adjust the font size for emphasis
+  },
   map: {
     fontSize: 14,
     color: "#a6a6a6",
@@ -191,7 +232,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  
+
   container: {
     flex: 1,
     backgroundColor: "#E8F5FE", // Light blue background for the whole page
@@ -321,75 +362,55 @@ const styles = StyleSheet.create({
   },
   recommendationCard: {
     flexDirection: "row",
-    backgroundColor: "#ffffff", // White card background
+    backgroundColor: "#ffffff", // White background for better readability
+    borderRadius: 10, // Rounded corners for modern design
+    marginVertical: 10, // Space between cards
     marginHorizontal: 20,
-    borderRadius: 15,
-    padding: 15,
-    marginBottom: 15,
+    padding: 15, // Space inside the card
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    marginTop:10,
-    elevation: 5,
+    elevation: 3,
   },
   doctorImage: {
-    width: 80,
+    width: 80, // Fixed size for uniformity
     height: 80,
-    borderRadius: 10,
-    marginRight: 10,
+    borderRadius: 40, // Circular image
+    marginRight: 15,
   },
   doctorInfo: {
-    justifyContent: "center",
+    flex: 1, // Allow flexible width
   },
   doctorName: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#004b8d", // Dark blue for doctor name
+    color: "#333", // Neutral color for contrast
+    marginBottom: 5,
   },
   doctorSpecialty: {
-    marginTop:5,
-    color: "#555",
+    fontSize: 14,
+    color: "#666", // Lighter gray for secondary text
+    marginBottom: 10,
   },
-  doctorRating: {
-    color: "#f39c12", // Gold for rating stars
-  },
-  bottomBar: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: "#ffffff", // White bottom bar background
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#ccc",
-  },
-  navItem: {
-    alignItems: "center",
-  },
-  profileImageText: {
-    color: 'white',
-    fontWeight: 'bold',
+  address: {
+    fontSize: 13,
+    color: "#888", // Subtle color for less critical information
+    marginBottom: 5,
+    lineHeight: 18, // Improved readability for multiline text
   },
   noConsultationsText: {
+    textAlign: "center",
     fontSize: 16,
-    color: '#999',
-    textAlign: 'center',
-    fontStyle: 'italic',
-    paddingVertical: 20,  // Adds spacing to make it look more centered
+    color: "#999", // Neutral color
+    marginTop: 20,
   },
-  psText: {
-    marginHorizontal: 20,
-    fontSize: 18,
-    marginBottom: 20,
-    color: 'black', // Set the text color to black
-    fontStyle: 'italic', // Optional: Make it italic like a "PS" note
-    fontSize: 14, // Optional: Adjust the font size for emphasis
+  buttonText: {
+    color: "#00C9A7", // Match theme
+    fontWeight: "bold",
   },
-  link: {
-    color: 'blue', // Blue color to make the URL stand out as a link
-    textDecorationLine: 'underline', // Add underline to make it look like a hyperlink
-  },
-
 });
+
+
 
 export default SelectDoctorScreen;

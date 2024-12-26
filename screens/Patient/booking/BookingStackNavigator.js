@@ -7,6 +7,7 @@ import SelectDoctorScreen from "./SelectDoctorScreen";
 import SelectDateScreen from "./SelectDateScreen";
 import ConfirmationScreen from "./ConfirmationScreen";
 import AppointmentsScreen from "./AppointmentsScreen";
+import SelectTimeSlotScreen from "./SelectTimeSlotScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -29,10 +30,17 @@ const BookingStackNavigator = () => {
                 options={{ headerTitle: "Select a Date" }}
             />
             <Stack.Screen
+                name="SelectTimeSlotScreen"
+                component={SelectTimeSlotScreen}
+                options={{ headerTitle: "Select Time" }}
+            />
+            <Stack.Screen
                 name="Confirmation"
                 component={ConfirmationScreen}
                 options={{ headerTitle: "Confirmation" }}
             />
+
+
         </Stack.Navigator>
     );
 };

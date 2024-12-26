@@ -1,11 +1,11 @@
-// SettingsScreen.js
+// UpdatePhoneScreen.js
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-const BlogScreen = () => {
+const UpdatePhoneScreen = ({ navigation }) => {
   return (
     <View style={styles.screenContainer}>
-      <Text style={styles.greetingText}>Health Screen Coming soon</Text>
+      <Text style={styles.greetingText}>Update Phone Screen Coming soon</Text>
     </View>
   );
 };
@@ -24,4 +24,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BlogScreen;
+export default UpdatePhoneScreen;

@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from "rea
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE_URL } from "../../services/apiConfig";
+import CustomLoader from "../../components/CustomLoader";
 
 const HomeScreen = ({ navigation }) => {
   const [user, setUser] = useState(null);
@@ -50,7 +51,7 @@ const HomeScreen = ({ navigation }) => {
   if (loading) {
     return (
       <View style={styles.container}>
-        <Text>Loading...</Text>
+        <CustomLoader />
       </View>
     );
   }
@@ -73,9 +74,9 @@ const HomeScreen = ({ navigation }) => {
             <Text style={styles.headerQuestion}>How are you today?</Text>
           </View>
           {/* Profile Image */}
-          {user && user.user_image_url ? (
+          {user && user.user_image_url_mobile ? (
             <Image
-              source={{ uri: user.user_image_url }}
+              source={{ uri: user.user_image_url_mobile }}
               style={styles.profileImage}
             />
           ) : (
@@ -90,9 +91,12 @@ const HomeScreen = ({ navigation }) => {
       <Text style={styles.sectionTitle}>Today's Consultations:</Text>
       <Text style={styles.sectionDate}>{todayDate}</Text>
 
-      <Text style={[styles.doctorRating, styles.psText]}>
-        PS: For online consultations, you should visit <Text style={styles.link}>docpro.tn</Text>
-      </Text>
+      {consultations.length > 0 && (
+        <Text style={[styles.doctorRating, styles.psText]}>
+          PS: For online consultations, you should visit{' '}
+          <Text style={styles.link}>docpro.tn</Text>
+        </Text>
+      )}
 
       <ScrollView>
         {consultations.length > 0 ? (
@@ -107,7 +111,7 @@ const HomeScreen = ({ navigation }) => {
                   Dr. {consultation.doctor.firstname} {consultation.doctor.lastname}
                 </Text>
                 <Text style={styles.doctorSpecialty}> at {new Date(consultation.appointment).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}</Text>
-                <Text style={styles.doctorSpecialty}> {consultation.appointment_type }</Text>
+                <Text style={styles.doctorSpecialty}> {consultation.appointment_type}</Text>
                 <Text style={styles.doctorRating}>{consultation.doctor.address}</Text>
                 <TouchableOpacity onPress={() => goToDoctorMap(consultation.doctor)}>
                   <Text>View on Map</Text>
@@ -117,8 +121,15 @@ const HomeScreen = ({ navigation }) => {
             </View>
           ))
         ) : (
-          <View style={styles.recommendationCard}>
-            <Text style={styles.noConsultationsText}>No consultations today.</Text>
+          <View style={styles.no_upcoming}>
+            <Image
+              source={require("../../assets/images/calendar.png")}// Replace with your icon
+              style={styles.image}
+            />
+            <Text style={styles.title}>No upcoming appointments</Text>
+            <Text style={styles.description}>
+              Take charge of your Skin health. Easily book your next appointment through DocPro.
+            </Text>
           </View>)}
       </ScrollView>
 
@@ -128,6 +139,42 @@ const HomeScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  no_upcoming: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  image: {
+    width: 120,
+    height: 120,
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#002147',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  description: {
+    fontSize: 16,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#007bff',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+
   container: {
     flex: 1,
     backgroundColor: "#E8F5FE", // Light blue background for the whole page
@@ -303,18 +350,18 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     paddingVertical: 20,  // Adds spacing to make it look more centered
   },
-psText: {
-  marginHorizontal: 20,
-  fontSize: 18,
-  marginBottom: 20,
-  color: 'black', // Set the text color to black
-  fontStyle: 'italic', // Optional: Make it italic like a "PS" note
-  fontSize: 14, // Optional: Adjust the font size for emphasis
-},
-link: {
-  color: 'blue', // Blue color to make the URL stand out as a link
-  textDecorationLine: 'underline', // Add underline to make it look like a hyperlink
-},
+  psText: {
+    marginHorizontal: 20,
+    fontSize: 18,
+    marginBottom: 20,
+    color: 'black', // Set the text color to black
+    fontStyle: 'italic', // Optional: Make it italic like a "PS" note
+    fontSize: 14, // Optional: Adjust the font size for emphasis
+  },
+  link: {
+    color: 'blue', // Blue color to make the URL stand out as a link
+    textDecorationLine: 'underline', // Add underline to make it look like a hyperlink
+  },
 });
 
 export default HomeScreen;

@@ -189,10 +189,9 @@ const AppointmentsScreen = ({ navigation }) => {
             <Text style={styles.headerGreeting}>
               Hi, {user?.firstname} {user?.lastname}!
             </Text>
-            <Text style={styles.headerQuestion}>How are you today?</Text>
           </View>
-          {user?.user_image_url ? (
-            <Image source={{ uri: user.user_image_url }} style={styles.profileImage} />
+          {user?.user_image_url_mobile ? (
+            <Image source={{ uri: user.user_image_url_mobile }} style={styles.profileImage} />
           ) : (
             <View style={styles.profileImagePlaceholder}>
               <Text style={styles.profileImageText}>No Image</Text>
