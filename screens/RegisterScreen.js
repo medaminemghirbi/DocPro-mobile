@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity,ActivityIndicator, StyleSheet, ImageBackground, KeyboardAvoidingView, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, StyleSheet, ImageBackground, KeyboardAvoidingView, Alert } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import Button from '../components/Button';
 import BackButton from '../components/BackButton';
 import StyledSelectList from '../components/SelectList';
@@ -32,6 +31,10 @@ const roleValidator = (role) => {
   if (!role) return 'Please select a role';
   return '';
 };
+const genderValidator = (role) => {
+  if (!role) return 'Please select a gender';
+  return '';
+};
 
 const gouvernementValidator = (gouvernement) => {
   if (!gouvernement) return 'Please select a gouvernement';
@@ -43,6 +46,8 @@ function RegisterScreen({ navigation }) {
   const [lastname, setLastName] = useState({ value: '', error: '' });
   const [email, setEmail] = useState({ value: '', error: '' });
   const [password, setPassword] = useState({ value: '', error: '' });
+  const [selectedGender, setSelectedGender] = useState('');
+
   const [selectedRole, setSelectedRole] = useState('');
   const [selectedGouvernement, setSelectedGouvernement] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -90,6 +95,8 @@ function RegisterScreen({ navigation }) {
     const emailError = emailValidator(email.value);
     const passwordError = passwordValidator(password.value);
     const roleError = roleValidator(selectedRole);
+    const genderError = genderValidator(selectedGender);
+
     const gouvernementError = gouvernementValidator(selectedGouvernement);
 
     if (firstnameError || lastnameError || emailError || passwordError || roleError || gouvernementError) {
@@ -98,6 +105,7 @@ function RegisterScreen({ navigation }) {
       setEmail({ ...email, error: emailError });
       setPassword({ ...password, error: passwordError });
       setSelectedRole(...selectedRole,roleError);
+      setSelectedGender(...selectedGender,genderError);
       setSelectedGouvernement(...selectedGouvernement,gouvernementError);
       setLoading(false);
       return;
@@ -115,6 +123,7 @@ function RegisterScreen({ navigation }) {
               firstname: firstname.value,
               email: email.value,
               password: password.value,
+              gender: selectedGender,
               type: selectedRole,
               location: selectedGouvernement,
             }
@@ -198,7 +207,7 @@ function RegisterScreen({ navigation }) {
           {password.error ? <Text style={styles.errorText}>{password.error}</Text> : null}
           {/* Select Gender */}
           <StyledSelectList
-            setSelected={(val) => setSelectedRole(val)}
+            setSelected={(val) => setSelectedGender(val)}
             data={gender}
             save="value"
             placeholder="Select Gender"

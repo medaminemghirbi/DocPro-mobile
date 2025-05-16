@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Button, StyleSheet, TextInput, Image, TouchableOpacity, ScrollView } from "react-native";
+import { useEffect, useState } from "react";
+import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, ScrollView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { API_BASE_URL } from "../../../services/apiConfig";
 import CustomLoader from "../../../components/CustomLoader";
 import { FontAwesome } from "@expo/vector-icons";
