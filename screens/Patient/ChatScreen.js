@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TextInput, Image, Button, TouchableOpacity, RefreshControl,KeyboardAvoidingView,Platform, Alert } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TextInput, Image, Button, TouchableOpacity, RefreshControl, KeyboardAvoidingView, Platform, Alert } from "react-native";
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../../services/apiConfig";
@@ -109,7 +109,6 @@ const ChatScreen = () => {
     const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
-      console.log('WebSocket connection opened');
       ws.send(
         JSON.stringify({
           command: 'subscribe',
@@ -143,7 +142,6 @@ const ChatScreen = () => {
     };
 
     ws.onclose = () => {
-      console.log('WebSocket connection closed');
     };
 
     // Fetch messages initially

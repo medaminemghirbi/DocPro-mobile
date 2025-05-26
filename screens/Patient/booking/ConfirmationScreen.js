@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -26,8 +26,6 @@ const ConfirmationScreen = ({ navigation, route }) => {
     const selectedDate = route.params?.selectedDate;
     const selectedTime = route.params?.selectedTime;
     const combinedDateTime = `${selectedDate}T${selectedTime}:00.000`;
-    console.log(doctorId)
-    console.log(combinedDateTime)
 
     const fetchUserData = async () => {
         try {
@@ -45,58 +43,60 @@ const ConfirmationScreen = ({ navigation, route }) => {
 
     
     const ConfirmNow = async () => {
-        setLoading(true); // Start loading
-        try {
-            const token = await AsyncStorage.getItem("authToken");
-            if (!token) {
-                throw new Error("Authentication token is missing.");
-            }
-    
-            const response = await fetch(`${API_BASE_URL}/api/mobile/create_demande`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    patient_id: user.id,
-                    doctor_id: doctorId,
-                    appointment: combinedDateTime,
-                    appointment_type: isOnline? '1' : '0',
-                    note : note || ""
-                }),
-            });
-    
-            const data = await response.json();
-            console.log(data); // Log API response
-    
-            if (data.status === 422) {
-                const errorMessage = data.errors
-                    ? data.errors.join(", ")
-                    : "Something went wrong. Please try again later.";
-                Alert.alert("Appointment Failed", errorMessage);
-            } else if (data.status === 200) {
-                Alert.alert(
-                    "Appointment Created Successfully",
-                    "Your appointment has been successfully created.",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => navigation.navigate("AppointmentList"),
-                        },
-                    ]
-                );
-            }else {
-                Alert.alert("Unexpected Error", "Something went wrong. Please try again.");
-            }
-        } catch (error) {
-            console.error("Error during Appointment Confirmation:", error);
-            Alert.alert(
-                "Appointment Failed",
-                "Please check your connection and try again."
-            );
+        setLoading(true);
+      
+        const token = await AsyncStorage.getItem("authToken");
+        if (!token) {
+          setLoading(false);
+          return Alert.alert("Authentication Error", "Authentication token is missing.");
         }
-    };
+      
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/mobile/create_demande`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              patient_id: user?.id,
+              doctor_id: doctorId,
+              appointment: combinedDateTime,
+              appointment_type: isOnline ? '1' : '0',
+              note: note || "",
+            }),
+          });
+      
+          const contentType = response.headers.get("content-type");
+          let data = {};
+          if (contentType && contentType.includes("application/json")) {
+            data = await response.json();
+          }
+      
+          if (response.ok && data.status === 200) {
+            setLoading(false);
+            return Alert.alert(
+              "Appointment Created Successfully",
+              "Your appointment has been successfully created.",
+              [
+                {
+                  text: "OK",
+                  onPress: () => navigation.navigate("AppointmentList"),
+                },
+              ]
+            );
+          } else {
+            setLoading(false);
+            return Alert.alert("Error", data?.error || "An unexpected error occurred.");
+          }
+        } catch (err) {
+          console.error("Network error:", err);
+          setLoading(false);
+          Alert.alert("Network Error", "Please check your internet connection.");
+        }
+      };
+      
+    
     
     useEffect(() => {
         fetchUserData();

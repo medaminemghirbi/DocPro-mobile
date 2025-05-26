@@ -1,39 +1,35 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useEffect, useState } from "react";
-import { View, Animated, StyleSheet, Image } from "react-native";
+import { useEffect, useState } from "react";
+import { View, Animated, StyleSheet, Dimensions, Image } from "react-native";
 
 const LoadingScreen = ({ navigation }) => {
   const [rotateAnim] = useState(new Animated.Value(0));
+  const { width } = Dimensions.get("window");
 
   const checkUserAndNavigate = async () => {
     try {
-      // Get the currentUser from AsyncStorage
       const user = await AsyncStorage.getItem('currentUser');
 
       if (!user) {
-        // If no user is found, navigate to login
-        navigation.replace('Login');
+        navigation.replace('First');
       } else {
-        // If user exists, parse the user data and check the role
         const parsedUser = JSON.parse(user);
         const userRole = parsedUser.type;
-        // Navigate based on the user role
         if (userRole === 'Doctor') {
           navigation.replace('DoctorDashboard');
         } else if (userRole === 'Patient') {
           navigation.replace('PatientDashboard');
         } else {
-          navigation.replace('Login'); // Default route
+          navigation.replace('First');
         }
       }
     } catch (error) {
       console.error('Error checking user in AsyncStorage:', error);
-      navigation.replace('Login'); // Redirect to login in case of error
+      navigation.replace('First');
     }
   };
 
   useEffect(() => {
-    // Start the rotating animation
     Animated.loop(
       Animated.timing(rotateAnim, {
         toValue: 1,
@@ -42,10 +38,9 @@ const LoadingScreen = ({ navigation }) => {
       })
     ).start();
 
-    // Call the checkUserAndNavigate function after the animation duration
     setTimeout(() => {
       checkUserAndNavigate();
-    }, 1500); // Matches the duration of the animation
+    }, 1500);
   }, [navigation, rotateAnim]);
 
   const rotate = rotateAnim.interpolate({
@@ -56,8 +51,9 @@ const LoadingScreen = ({ navigation }) => {
   return (
     <View style={styles.loadingContainer}>
       <Image
-        source={require("../../assets/images/logo-loading.png")}
-        style={styles.loadingImage}
+        source={require("../../assets/images/logo_with_beta_1.png")}
+        style={[styles.loadingImage, { width: width * 0.6, height: width * 0.3 }]}
+        resizeMode="contain"
       />
       <Animated.View style={[styles.loader, { transform: [{ rotate }] }]} />
     </View>
@@ -73,6 +69,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
   },
+  loadingImage: {
+    marginBottom: 30,
+  },
   loader: {
     width: 50,
     height: 50,
@@ -80,7 +79,5 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     borderColor: "#0F9BAE",
     borderTopColor: "transparent",
-    animationDuration: "1s",
-    borderStyle: "solid",
   },
 });

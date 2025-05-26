@@ -6,9 +6,7 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  RefreshControl,
-  Modal,
-  Alert,
+  RefreshControl, Alert
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -99,7 +97,6 @@ const AppointmentsScreen = ({ navigation }) => {
       setLoading(true);
       const userId = await AsyncStorage.getItem("id");
       const token = await AsyncStorage.getItem("authToken");
-      console.log(token)
       if (token) {
         const response = await fetch(
           `${API_BASE_URL}/api/mobile/patient_appointments/${userId}`,
@@ -114,11 +111,9 @@ const AppointmentsScreen = ({ navigation }) => {
         if (response.ok) {
           setConsultations(result);
         } else {
-          console.error("Error fetching consultations:", result.message);
         }
       }
     } catch (error) {
-      console.error("Error fetching consultations:", error);
     } finally {
       setLoading(false);
     }
@@ -335,6 +330,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#8E44AD', // A soft purple color
     color: 'white', // Text color for better contrast
   },  
+  filterContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    marginTop: 60,
+  },
   buttonContainer: {
     flexDirection: "row",  // Align items horizontally
     alignItems: "center",  // Vertically center the items
@@ -500,134 +502,96 @@ const styles = StyleSheet.create({
   },
   recommendationCard: {
     flexDirection: "row",
-    backgroundColor: "#ffffff", // White card background
-    marginHorizontal: 20,
-    borderRadius: 15,
-    padding: 15,
-    marginBottom: 15,
+    backgroundColor: "#fff",
+    marginHorizontal: 16,
+    marginBottom: 12,
+    borderRadius: 16,
+    padding: 12,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
+    shadowRadius: 6,
+    elevation: 3,
   },
   doctorImage: {
     width: 80,
     height: 80,
-    borderRadius: 10,
-    marginRight: 10,
+    borderRadius: 40,
+    marginRight: 12,
   },
   doctorInfo: {
+    flex: 1,
     justifyContent: "center",
   },
   appointment: {
-    fontSize: 15,
-    fontWeight: "bold",
-    color: "#004b8d", // Dark blue for appointment dATE
+    fontSize: 14,
+    color: "#333",
   },
   doctorName: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#6b00b3", // Dark blue for doctor name
+    color: "#2c3e50",
   },
   doctorSpecialty: {
-    color: "#555",
+    fontSize: 14,
+    color: "#666",
   },
-  doctorRating: {
-    color: "#f39c12", // Gold for rating stars
-  },
-  bottomBar: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: "#ffffff", // White bottom bar background
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#ccc",
-  },
-  navItem: {
-    alignItems: "center",
-  },
-  profileImageText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  noConsultationsText: {
-    fontSize: 16,
-    color: '#999',
-    textAlign: 'center',
-    fontStyle: 'italic',
-    paddingVertical: 20,  // Adds spacing to make it look more centered
-  },
-  psText: {
-    marginHorizontal: 20,
-    fontSize: 18,
-    marginBottom: 10,
-    marginTop: 50,
-    color: 'black', // Set the text color to black
-    fontStyle: 'italic', // Optional: Make it italic like a "PS" note
-    fontSize: 18, // Optional: Adjust the font size for emphasis
-  },
-  link: {
-    color: 'blue', // Blue color to make the URL stand out as a link
-    textDecorationLine: 'underline', // Add underline to make it look like a hyperlink
-  },
-  filterContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    marginTop: 60,
-  },
-  textWithDropdown: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "80%", // Ensure enough space for both elements
-  },
-  psText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333", // You can customize this color
-  },
-  dropdownButton: {
-    padding: 10,
-    backgroundColor: "#fff",
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    marginLeft: 10, // Add some space between the text and button
-  },
-  dropdownButtonText: {
-    fontSize: 12, // Smaller text for the button
-    color: "#000000", // White text color
-    fontWeight: "bold", // Make the text bold
-  },
-  dropdownMenu: {
-    position: "absolute",
-    top: 50,
-    right: 20,
-    backgroundColor: "#fff",
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    width: 150,
-    zIndex: 1,
-  },
-  dropdownItem: {
-    padding: 10,
-  },
-  dropdownItemText: {
-    fontSize: 16,
-    color: "#333",
+  doctorAddress: {
+    fontSize: 13,
+    color: "#888",
+    marginTop: 4,
   },
   map: {
     fontSize: 14,
-    color: "#a6a6a6",
-    fontWeight: "bold",
-    marginTop: 7,
-    textAlign: "left",
+    color: "#3498db",
+    marginTop: 4,
+    textDecorationLine: "underline",
+  },
+  statusButton: {
+    borderRadius: 20,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    backgroundColor: "#ccc",
+  },
+  statusButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  deleteButtonText: {
+    color: "#fff",
+    backgroundColor: "#e74c3c",
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 8,
+    gap: 8,
+  },
+  dropdown: {
+    margin: 16,
+    height: 50,
+    width: 150,
+    backgroundColor: '#ffffff',
+    borderRadius: 22,
+    paddingHorizontal: 8,
+  },
+  imageStyle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    marginLeft: 8,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
   },
 });
-
 export default AppointmentsScreen;

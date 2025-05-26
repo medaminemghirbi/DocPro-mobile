@@ -1,27 +1,64 @@
-// MyProfilInformation.js
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {
+  View, Dimensions
+} from "react-native";
+import { TabView, TabBar } from "react-native-tab-view";
+import PersonalInfoScreen from "./profil_tabs/PersonalInfoScreen";
+import LocationScreen from "./profil_tabs/LocationScreen";
+import ProfilImageScreen from "./profil_tabs/ProfilImageScreen";
 
-const MyProfilInformationScreen = ({ navigation }) => {
+const MyProfilInformationScreen = () => {
+
+  const layout = Dimensions.get("window");
+
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: "info", title: "Personal Info" },
+    { key: "location", title: "Location" },
+    { key: "image", title: "Profile Image" },
+  ]);
+
+  const renderScene = ({ route }) => {
+    switch (route.key) {
+      case "info":
+        return (
+          <PersonalInfoScreen/>
+        );
+      case "location":
+        return (
+          <LocationScreen/>
+        );
+      case "image":
+        return (
+          <ProfilImageScreen/>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
-    <View style={styles.screenContainer}>
-      <Text style={styles.greetingText}>My Profil Information Screen Coming soon</Text>
+    <View style={{ flex: 1 }}>
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: layout.width }}
+        renderTabBar={(props) => (
+          <TabBar
+            {...props}
+            indicatorStyle={{ backgroundColor: "#0F9BAE" }}
+            style={{ backgroundColor: "#FFF", elevation: 2 }}
+            labelStyle={{
+              fontWeight: "bold",
+              textTransform: "capitalize",
+            }}
+            activeColor="#0F9BAE"
+            inactiveColor="#999"
+          />
+        )}
+      />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  screenContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#FFF",
-  },
-  greetingText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#0F9BAE",
-  },
-});
-
 export default MyProfilInformationScreen;

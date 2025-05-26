@@ -1,9 +1,20 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Modal, Alert, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ImageBackground,
+  Modal,
+  Alert,
+  KeyboardAvoidingView,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { API_BASE_URL } from '../services/apiConfig';
+import BackButton from '../components/BackButton';
 
 function Login() {
   const navigation = useNavigation();
@@ -13,7 +24,7 @@ function Login() {
   const [showModal, setShowModal] = useState(false);
   const login = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/mobile/sessions`, {
+      const response = await fetch(`${API_BASE_URL}/api/sign_in`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,6 +101,7 @@ function Login() {
 
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.container}>
+      <BackButton goBack={navigation.goBack} />
       <ImageBackground source={require('../assets/images/image.png')}style={styles.backgroundImage}>
         <View style={styles.formContainer}>
           <Text style={styles.title}>Login</Text>

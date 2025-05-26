@@ -1,2 +1,2 @@
 // constants.js
-export const API_BASE_URL = 'http://192.168.1.21:3001';
+export var API_BASE_URL = 'http://192.168.1.22:3001';
