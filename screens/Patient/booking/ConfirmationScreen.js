@@ -43,7 +43,6 @@ const ConfirmationScreen = ({ navigation, route }) => {
 
     
     const ConfirmNow = async () => {
-        console.log("ConfirmNow called");
         setLoading(true);
       
         const token = await AsyncStorage.getItem("authToken");

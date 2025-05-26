@@ -97,7 +97,6 @@ const AppointmentsScreen = ({ navigation }) => {
       setLoading(true);
       const userId = await AsyncStorage.getItem("id");
       const token = await AsyncStorage.getItem("authToken");
-      console.log(token)
       if (token) {
         const response = await fetch(
           `${API_BASE_URL}/api/mobile/patient_appointments/${userId}`,
@@ -112,11 +111,9 @@ const AppointmentsScreen = ({ navigation }) => {
         if (response.ok) {
           setConsultations(result);
         } else {
-          console.error("Error fetching consultations:", result.message);
         }
       }
     } catch (error) {
-      console.error("Error fetching consultations:", error);
     } finally {
       setLoading(false);
     }

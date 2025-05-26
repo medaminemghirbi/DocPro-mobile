@@ -158,7 +158,7 @@ function RegisterScreen({ navigation }) {
       <ImageBackground source={require('../assets/images/image.png')} style={styles.backgroundImage}>
         <BackButton goBack={navigation.goBack} />
         <View style={styles.formContainer}>
-          <Text style={styles.title}>Welcome to DocPro</Text>
+          <Text style={styles.title}>Welcome to DermaPro</Text>
 
           {/* First Name */}
           <TextInput

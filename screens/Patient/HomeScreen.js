@@ -27,6 +27,7 @@ const HomeScreen = ({ navigation }) => {
     try {
       const currentUser = await AsyncStorage.getItem("currentUser");
       const userData = JSON.parse(currentUser);
+      console.log(userData)
       setUser(userData);
       const userId = await AsyncStorage.getItem("id");
       const token = await AsyncStorage.getItem("authToken");
@@ -164,7 +165,7 @@ const HomeScreen = ({ navigation }) => {
             <Text style={styles.title}>No upcoming appointments</Text>
             <Text style={styles.description}>
               Take charge of your skin health. Easily book your next appointment
-              through DocPro.
+              through DemraPro.
             </Text>
           </View>
         )}

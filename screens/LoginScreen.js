@@ -43,7 +43,6 @@ function Login() {
         Alert.alert('Login Failed', 'Your Account is not confirmed Check your email.');
       }else{
         if(data.logged_in){
-          console.log(data)
           const token = data.token;
           const userRole = data.type;
           await AsyncStorage.setItem('currentUser', JSON.stringify(data.user));

@@ -100,47 +100,59 @@ const ImageScanScreen = () => {
   };
 
   // Handle scan upload
-  const handleScan = async () => {
-    if (!imageUri) {
-      Alert.alert("No image selected", "Please select an image first.");
-      return;
+// Handle scan upload
+const handleScan = async () => {
+  if (!imageUri) {
+    Alert.alert("No image selected", "Please select an image first.");
+    return;
+  }
+
+  setUploading(true);
+  startScanAnimation();
+
+  try {
+    const formData = new FormData();
+    formData.append("file", {
+      uri: imageUri,
+      name: "image.jpg",
+      type: "image/jpeg",
+    });
+
+    const currentUserStr = await AsyncStorage.getItem("currentUser");
+    const currentUser = JSON.parse(currentUserStr);
+
+    const response = await fetch(
+      `${API_BASE_URL}/api/mobile/predict/${currentUser.id}`,
+      {
+        method: "POST",
+        body: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      // Check if it's a server error
+      if (response.status === 500) {
+        Alert.alert("image selected not skin", "Please select a skean image.");
+        throw new Error("Server error");
+      } else {
+        throw new Error(`Unexpected error: ${response.status}`);
+      }
     }
 
-    setUploading(true);
-    startScanAnimation();
+    const result = await response.json();
+    setScanResult(result);
+  } catch (error) {
+    console.error("Upload failed", error);
+    
+    Alert.alert("Error", error.message === "Server error" ? "Not Image of a valid skin Please try again later." : "Upload failed. Please try again.");
+  } finally {
+    setUploading(false);
+  }
+};
 
-    try {
-      const formData = new FormData();
-      formData.append("file", {
-        uri: imageUri,
-        name: "image.jpg",
-        type: "image/jpeg",
-      });
-      const currentUserStr = await AsyncStorage.getItem("currentUser");
-      const currentUser = JSON.parse(currentUserStr);
-
-      const response = await fetch(
-        `${API_BASE_URL}/api/mobile/predict/${currentUser.id}`,
-        {
-          method: "POST",
-          body: formData,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      const result = await response.json();
-      console.log(result);
-
-      setUploading(false);
-      setScanResult(result);
-    } catch (error) {
-      console.error("Upload failed", error);
-      setUploading(false);
-      Alert.alert("Upload failed", "Please try again.");
-    }
-  };
 
   // Refresh control handler
   const onRefresh = () => {

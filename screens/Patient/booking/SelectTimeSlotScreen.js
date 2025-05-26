@@ -26,7 +26,6 @@ const SelectTimeSlotScreen = ({ route, navigation }) => {
 
                     const result = await response.json();
                     if (response.ok) {
-                        console.log(result.available_slots);
                         setAvailableSlots(result.available_slots); // Set available slots
                     } else {
                         console.error('Error fetching available slots:', result.message);

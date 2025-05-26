@@ -1,5 +1,5 @@
 // SettingsScreen.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,38 +7,57 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome5, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomLoader from "../../../components/CustomLoader";
-import { Picker } from "@react-native-picker/picker";
 
 const SettingsScreen = ({ navigation }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
   const languageNames = {
     fr: "Français",
     ar: "العربية",
     en: "Anglais",
   };
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const currentUser = await AsyncStorage.getItem("currentUser");
-        const userData = JSON.parse(currentUser);
-        setUser(userData); // Store user data in state
-        console.log(userData);
-      } catch (error) {
-        console.error("Error fetching user data", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchUserData = async () => {
+    try {
+      const currentUser = await AsyncStorage.getItem("currentUser");
+      const userData = JSON.parse(currentUser);
+      setUser(userData);
+    } catch (error) {
+      console.error("Error fetching user data", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
+  useEffect(() => {
     fetchUserData();
   }, []);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchUserData();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.clear();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      });
+    } catch (e) {
+      console.error("Logout error:", e);
+    }
+  };
 
   if (loading) {
     return (
@@ -48,32 +67,17 @@ const SettingsScreen = ({ navigation }) => {
     );
   }
 
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.clear(); // or removeItem('currentUser')
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Login" }], // or your login screen name
-      });
-    } catch (e) {
-      console.error("Logout error:", e);
-    }
-  };
-
   return (
     <View style={styles.container}>
-      {/* Header */}
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.header}>
-          {/* Greeting and Question */}
           <View style={styles.textContainer}>
             <Text style={styles.headerGreeting}>
-              Hi, {user.firstname} {user.lastname}!
+              Hi, {user?.firstname} {user?.lastname}!
             </Text>
             <Text style={styles.headerQuestion}>How are you today?</Text>
           </View>
-          {/* Profile Image */}
-          {user && user.user_image_url_mobile ? (
+          {user?.user_image_url_mobile ? (
             <Image
               source={{ uri: user.user_image_url_mobile }}
               style={styles.profileImage}
@@ -85,8 +89,14 @@ const SettingsScreen = ({ navigation }) => {
           )}
         </View>
       </SafeAreaView>
-      <ScrollView style={styles.content}>
-        {/* Personal Information */}
+
+      <ScrollView
+        style={styles.content}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {/* Personal Information Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Personal information</Text>
           <TouchableOpacity
@@ -97,7 +107,7 @@ const SettingsScreen = ({ navigation }) => {
             <View style={styles.itemContent}>
               <Text style={styles.itemTitle}>My profile</Text>
               <Text style={styles.itemSubtitle}>
-                {user.lastname} {user.firstname.toUpperCase()}
+                {user?.lastname} {user?.firstname?.toUpperCase?.() || ""}
               </Text>
             </View>
             <Ionicons
@@ -107,31 +117,15 @@ const SettingsScreen = ({ navigation }) => {
               style={styles.rightIcon}
             />
           </TouchableOpacity>
-
-          <TouchableOpacity style={styles.item}>
-            <FontAwesome5 name="user-circle" size={24} color="#007AFF" />
-
-            <View style={styles.itemContent}>
-              <Text style={styles.itemTitle}>IA Response Language</Text>
-              <Picker
-                selectedValue={user?.language || "fr"}
-                onValueChange={(itemValue) =>
-                  setUser((prev) => ({ ...prev, language: itemValue }))
-                }
-                style={styles.picker}
-              >
-                <Picker.Item label="Français" value="fr" />
-                <Picker.Item label="العربية" value="ar" />
-                <Picker.Item label="Anglais" value="en" />
-              </Picker>
-            </View>
-          </TouchableOpacity>
         </View>
 
-        {/* Login Section */}
+        {/* Authentication Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Authentification </Text>
-          <TouchableOpacity style={styles.item}>
+          <Text style={styles.sectionTitle}>Authentification</Text>
+          <TouchableOpacity
+            style={[styles.item, styles.locked]}
+            disabled={true}
+          >
             <MaterialIcons name="email" size={24} color="#007AFF" />
             <View style={styles.itemContent}>
               <Text style={styles.itemTitle}>Email</Text>
@@ -141,6 +135,7 @@ const SettingsScreen = ({ navigation }) => {
               )}
             </View>
           </TouchableOpacity>
+
           <TouchableOpacity
             onPress={() => navigation.navigate("UpdateNotificationScreen")}
             style={styles.item}
@@ -149,9 +144,7 @@ const SettingsScreen = ({ navigation }) => {
             <View style={styles.itemContent}>
               <Text style={styles.itemTitle}>Notification Settings</Text>
               <Text style={styles.itemSubtitle}>
-                {user.phone_number
-                  ? `+216${user.phone_number}`
-                  : "No phone number provided"}
+                Update Your Notifications System
               </Text>
             </View>
             <Ionicons
@@ -161,13 +154,23 @@ const SettingsScreen = ({ navigation }) => {
               style={styles.rightIcon}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.item}>
+
+          <TouchableOpacity style={styles.item}
+          onPress={() => navigation.navigate("UpdatePasswordScreen")}
+          >
             <Ionicons name="lock-closed" size={24} color="#007AFF" />
             <View style={styles.itemContent}>
               <Text style={styles.itemTitle}>Password</Text>
               <Text style={styles.itemSubtitle}>********</Text>
             </View>
+            <Ionicons
+              name="chevron-forward"
+              size={24}
+              color="#B0B0B0"
+              style={styles.rightIcon}
+            />
           </TouchableOpacity>
+
           <TouchableOpacity
             style={styles.logoutButton}
             onPress={handleLogout}
@@ -270,7 +273,6 @@ const styles = StyleSheet.create({
     height: 40,
     width: "100%",
   },
-
   logoutButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -285,7 +287,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5, // for Android shadow
+    elevation: 5,
   },
   logoutButtonText: {
     color: "#fff",
@@ -293,6 +295,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginLeft: 10,
   },
+  
 });
 
 export default SettingsScreen;

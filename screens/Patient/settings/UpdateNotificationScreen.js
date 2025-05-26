@@ -97,7 +97,6 @@ const UpdateNotificationScreen = () => {
       });
 
       const responseJson = await response.json();
-      console.log(responseJson)
       if (responseJson) {
         // Update AsyncStorage with the updated user data from the API response
         await AsyncStorage.setItem("currentUser", JSON.stringify(responseJson)); // Assuming responseJson.user contains updated user data

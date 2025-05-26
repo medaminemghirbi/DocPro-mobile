@@ -30,7 +30,6 @@ const DictionaryScreen = () => {
   const fetchMaladies = async () => {
     try {
       const token = await AsyncStorage.getItem("authToken");
-      console.log("Token:", token);
       if (token) {
         const response = await fetch(`${API_BASE_URL}/api/mobile/maladies`, {
           method: "GET",

@@ -4,41 +4,51 @@ import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_BASE_URL } from "../services/apiConfig";
+import axios from "axios";
 
 export default function FirstScreen() {
       const navigation = useNavigation();
       useEffect(() => {
         const checkLoginStatus = async () => {
           try {
-            const token = await AsyncStorage.getItem('authToken');
-            const user = await AsyncStorage.getItem('currentUser');
+            const token = await AsyncStorage.getItem("authToken");
+            const user = await AsyncStorage.getItem("currentUser");
     
-            if (token && user) {
+            if (!token || !user) {
+              navigation.replace("Login");
+              return;
+            }
+    
+            // Check token validity with backend
+            const response = await axios.get(`${API_BASE_URL}/api/mobile/verify`, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+    
+            if (response.status === 200) {
               const parsedUser = JSON.parse(user);
-              const userRole = parsedUser.type || (await AsyncStorage.getItem('userRole'));
+              const userRole = parsedUser.type || (await AsyncStorage.getItem("userRole"));
     
               if (userRole === "Doctor") {
                 navigation.replace("Doctor");
-                setTimeout(() => {
-                  Toast.show({
-                    type: 'success',
-                    text1: 'You are already logged in!!',
-                    text2: 'Welcome back 👋',
-                  });
-                }, 100);
               } else {
                 navigation.replace("Patient");
-                setTimeout(() => {
-                  Toast.show({
-                    type: 'success',
-                    text1: 'You are already logged in!!',
-                    text2: 'Welcome back sir 👋',
-                  });
-                }, 100);
               }
             }
           } catch (error) {
-            console.error("Failed to check login status:", error);
+            if (
+              error.response &&
+              error.response.status === 401 &&
+              error.response.data.error === "Token has expired"
+            ) {
+              // Clear user data and redirect to login
+              await AsyncStorage.removeItem("authToken");
+              await AsyncStorage.removeItem("currentUser");
+              await AsyncStorage.removeItem("userRole");
+              navigation.replace("Login");
+            } else {
+              console.error("Unexpected error during auth check:", error);
+            }
           }
         };
     

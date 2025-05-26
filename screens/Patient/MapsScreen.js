@@ -21,7 +21,6 @@ const MapsScreen = ({ route, navigation }) => {
         if (coords) {
             const { latitude, longitude } = coords;
             setUserLocation({ latitude, longitude });
-            console.log(userLocation)
         }
     };
 
