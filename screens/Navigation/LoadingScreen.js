@@ -16,9 +16,9 @@ const LoadingScreen = ({ navigation }) => {
         const parsedUser = JSON.parse(user);
         const userRole = parsedUser.type;
         if (userRole === 'Doctor') {
-          navigation.replace('DoctorDashboard');
+          navigation.replace('Doctor');
         } else if (userRole === 'Patient') {
-          navigation.replace('PatientDashboard');
+          navigation.replace('Patient');
         } else {
           navigation.replace('First');
         }
