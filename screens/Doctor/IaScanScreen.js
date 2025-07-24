@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -14,11 +14,11 @@ import {
   Easing,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { API_BASE_URL } from "../../../services/apiConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
+import { API_BASE_URL } from "../../services/apiConfig";
 
-const ImageScanScreen = () => {
+const IaScanScreen = () => {
   const [imageUri, setImageUri] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [scanResult, setScanResult] = useState(null);
@@ -122,7 +122,7 @@ const handleScan = async () => {
     const currentUser = JSON.parse(currentUserStr);
 
     const response = await fetch(
-      `${API_BASE_URL}/api/mobile/predict/patient/${currentUser.id}`,
+      `${API_BASE_URL}/api/mobile/predict/doctor/${currentUser.id}`,
       {
         method: "POST",
         body: formData,
@@ -187,12 +187,12 @@ const handleScan = async () => {
         >
           <Text style={styles.pickButtonText}>Gallery</Text>
         </TouchableOpacity>
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={[styles.pickButton, { flex: 1, marginLeft: 10 }]}
           onPress={takePhoto}
         >
-          <Text style={styles.pickButtonText}>Take Photo</Text>
-        </TouchableOpacity> */}
+          {/* <Text style={styles.pickButtonText}>Take Photo</Text> */}
+        </TouchableOpacity>
       </View>
 
       {imageUri && (
@@ -377,4 +377,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ImageScanScreen;
+export default IaScanScreen;

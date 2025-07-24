@@ -27,7 +27,6 @@ const HomeScreen = ({ navigation }) => {
     try {
       const currentUser = await AsyncStorage.getItem("currentUser");
       const userData = JSON.parse(currentUser);
-      console.log(userData)
       setUser(userData);
       const userId = await AsyncStorage.getItem("id");
       const token = await AsyncStorage.getItem("authToken");

@@ -11,9 +11,9 @@ import {
   Platform
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { API_BASE_URL } from "../../../services/apiConfig";
 import CustomLoader from "../../../components/CustomLoader";
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
 
 const { width, height } = Dimensions.get('window');
 
@@ -144,6 +144,7 @@ const SelectDoctorScreen = ({ navigation }) => {
               activeOpacity={0.9}
             >
               <Image
+              onPress={() => navigation.navigate("DoctorDetailsScreen", { doctorId: doctor.id })}
                 source={{
                   uri: doctor?.user_image_url_mobile ||
                     "https://via.placeholder.com/80",
@@ -152,7 +153,9 @@ const SelectDoctorScreen = ({ navigation }) => {
               />
               <View style={styles.doctorInfo}>
                 <View style={styles.nameVerificationContainer}>
-                  <Text style={styles.doctorName}>
+                  <Text 
+                  onPress={() => navigation.navigate("DoctorDetailsScreen", { doctorId: doctor.id })}
+                  style={styles.doctorName}>
                     Dr. {doctor.firstname} {doctor.lastname}
                   </Text>
                   {!doctor.is_archived && (

@@ -1,5 +1,5 @@
 // SettingsScreen.js
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -13,6 +13,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome5, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomLoader from "../../../components/CustomLoader";
+import { API_BASE_URL } from "../../../services/apiConfig";
+import axios from 'axios';
 
 const SettingsScreen = ({ navigation }) => {
   const [user, setUser] = useState(null);
@@ -28,6 +30,7 @@ const SettingsScreen = ({ navigation }) => {
   const fetchUserData = async () => {
     try {
       const currentUser = await AsyncStorage.getItem("currentUser");
+      const token = await AsyncStorage.getItem("token");
       const userData = JSON.parse(currentUser);
       setUser(userData);
     } catch (error) {
@@ -49,13 +52,20 @@ const SettingsScreen = ({ navigation }) => {
 
   const handleLogout = async () => {
     try {
+      const token = await AsyncStorage.getItem('token');
+      await axios.delete(`${API_BASE_URL}/api/sign_out`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+      },
+      });
+  
       await AsyncStorage.clear();
       navigation.reset({
         index: 0,
-        routes: [{ name: "Login" }],
+        routes: [{ name: 'Login' }],
       });
     } catch (e) {
-      console.error("Logout error:", e);
+      console.error('Logout error:', e.response?.data || e.message);
     }
   };
 

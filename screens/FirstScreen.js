@@ -27,14 +27,16 @@ export default function FirstScreen() {
     
             if (response.status === 200) {
               const parsedUser = JSON.parse(user);
-              const userRole = parsedUser.type || (await AsyncStorage.getItem("userRole"));
-    
+              const userRole = parsedUser?.type || (await AsyncStorage.getItem("userRole"));
               if (userRole === "Doctor") {
                 navigation.replace("Doctor");
-              } else {
+              } else if (userRole === "Patient") {
                 navigation.replace("Patient");
+              } else {
+                // If userRole is null, undefined, or anything else
+                navigation.replace("Login");
               }
-            }
+            }            
           } catch (error) {
             if (
               error.response &&
