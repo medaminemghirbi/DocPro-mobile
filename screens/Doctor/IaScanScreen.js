@@ -1,17 +1,17 @@
 import { useState, useCallback } from "react";
 import {
-    View,
-    Text,
-    StyleSheet,
-    Image,
-    TouchableOpacity,
-    Alert,
-    ScrollView,
-    ActivityIndicator,
-    RefreshControl,
-    Linking,
-    Animated,
-    Easing,
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+  ActivityIndicator,
+  RefreshControl,
+  Linking,
+  Animated,
+  Easing,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -122,7 +122,7 @@ const handleScan = async () => {
     const currentUser = JSON.parse(currentUserStr);
 
     const response = await fetch(
-      `${API_BASE_URL}/api/mobile/predict_mobile`,
+      `${API_BASE_URL}/api/mobile/predict/doctor/${currentUser.id}`,
       {
         method: "POST",
         body: formData,
@@ -191,7 +191,7 @@ const handleScan = async () => {
           style={[styles.pickButton, { flex: 1, marginLeft: 10 }]}
           onPress={takePhoto}
         >
-          <Text style={styles.pickButtonText}>Take Photo</Text>
+          {/* <Text style={styles.pickButtonText}>Take Photo</Text> */}
         </TouchableOpacity>
       </View>
 

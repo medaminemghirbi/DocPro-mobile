@@ -122,7 +122,7 @@ const handleScan = async () => {
     const currentUser = JSON.parse(currentUserStr);
 
     const response = await fetch(
-      `${API_BASE_URL}/api/mobile/predict/${currentUser.id}`,
+      `${API_BASE_URL}/api/mobile/predict/patient/${currentUser.id}`,
       {
         method: "POST",
         body: formData,
@@ -187,12 +187,12 @@ const handleScan = async () => {
         >
           <Text style={styles.pickButtonText}>Gallery</Text>
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={[styles.pickButton, { flex: 1, marginLeft: 10 }]}
           onPress={takePhoto}
         >
           <Text style={styles.pickButtonText}>Take Photo</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       {imageUri && (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, StyleSheet, ImageBackground, KeyboardAvoidingView, Alert } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Button from '../components/Button';

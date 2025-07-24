@@ -1,5 +1,3 @@
-// BookingStackNavigator.js
-import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 // Import Booking Flow Screens
@@ -8,10 +6,11 @@ import SelectDateScreen from "./SelectDateScreen";
 import ConfirmationScreen from "./ConfirmationScreen";
 import AppointmentsScreen from "./AppointmentsScreen";
 import SelectTimeSlotScreen from "./SelectTimeSlotScreen";
+import DoctorDetailsScreen from "./DoctorDetailsScreen";
 
-const Stack = createNativeStackNavigator();
+var Stack = createNativeStackNavigator();
 
-const BookingStackNavigator = () => {
+var BookingStackNavigator = function BookingStackNavigator() {
     return (
         <Stack.Navigator>
             <Stack.Screen
@@ -34,6 +33,13 @@ const BookingStackNavigator = () => {
                 component={SelectTimeSlotScreen}
                 options={{ headerTitle: "Select Time" }}
             />
+                <Stack.Screen 
+                name="DoctorDetailsScreen" 
+                component={DoctorDetailsScreen} 
+                options={{ headerTitle: "Doctor Details" }}
+
+                />
+
             <Stack.Screen
                 name="Confirmation"
                 component={ConfirmationScreen}

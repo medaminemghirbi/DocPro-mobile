@@ -1,5 +1,5 @@
 // SettingsScreen.js
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -31,7 +31,6 @@ const SettingsScreen = ({ navigation }) => {
     try {
       const currentUser = await AsyncStorage.getItem("currentUser");
       const token = await AsyncStorage.getItem("token");
-      console.log(token)
       const userData = JSON.parse(currentUser);
       setUser(userData);
     } catch (error) {
@@ -54,7 +53,6 @@ const SettingsScreen = ({ navigation }) => {
   const handleLogout = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      console.log(token)
       await axios.delete(`${API_BASE_URL}/api/sign_out`, {
         headers: {
           Authorization: `Bearer ${token}`,

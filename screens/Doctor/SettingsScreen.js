@@ -1,6 +1,6 @@
 import { Text } from "react-native";
 
-const SettingsScreen = () => {
+var SettingsScreen = function SettingsScreen() {
   return (
       <Text>Coming soon</Text>
   );
